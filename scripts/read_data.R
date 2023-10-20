@@ -45,5 +45,3 @@ sum(datp$medicamento_target, na.rm = TRUE)
 
 
 apply(array, margin, ...)
-
-#Prueba
