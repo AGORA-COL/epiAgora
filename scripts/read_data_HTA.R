@@ -1,3 +1,13 @@
+
+# Rutina para verificación de datos de HTA
+# Fecha: XXX
+# Proyecto AGORA
+
+
+rm(list=ls())
+library(tidyverse)
+library(readxl)
+
 #cod
 cods <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "HTA")
 names(cods) <- epitrix::clean_labels(names(cods))

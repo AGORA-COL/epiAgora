@@ -1,10 +1,9 @@
-# Other packages to check
+# Rutina para verificación de datos de DM
+# Fecha: XXX
+# Proyecto AGORA
 
-# https://cran.r-project.org/src/contrib/Archive/charlson/
-# https://github.com/ellessenne/comorbidity/
-# https://rpubs.com/nathanh36/jjcdm
 
-rmLlist=ls()
+rm(list=ls())
 library(tidyverse)
 library(readxl)
 #cod
@@ -31,8 +30,8 @@ names(datp2) <- epitrix::clean_labels(names(datp2))
 datp2_1 <- strsplit(datp2$diagnosticoprincipal, "-")
 datp2_1 <- data.frame(datp2, do.call(rbind, datp2_1))
 names(datp2_1)
-names(datp2_1)[15]='codcie10'
-names(datp2_1)[16]='defcie10'
+names(datp2_1)[15]='codcie10' #Verificar par reproducibilidad
+names(datp2_1)[16]='defcie10' #Verificar par reproducibilidad
 datp2_1 <- datp2_1 %>% mutate (name_dx = epitrix::clean_labels(defcie10))
 datp2_1$codcie10 <- gsub(" ", "", datp2_1$codcie10)
 #bd3
@@ -66,7 +65,7 @@ for (i in seq_along (vector_raices_medic)) {
 
 sum(datp$medicamento_target, na.rm = TRUE)/nrow(datp)
 
-apply(array, margin, ...)
+#apply(array, margin, ...)
 
 #aplicación bd2 (SIN CUPS, NI ATC)
 datp2_1$enf_cie10 <- NA
@@ -163,4 +162,16 @@ resultados <- matrix(c("bd_2011",#bd
                      nrow = 4)
 colnames(resultados) <- c("BD","Muestra", "Casos CIE-10", "Prevalencia por CIE-10",
                           "Casos CUPS", "Prevalencia por CUPS", "Casos dx. o CUPS o ATC",
-                          "Prevalencia por dx. o CUPS o ATC")
+                          "Prevalencia por dx. o CUPS o ATC") #Verificar para reproducibilidad
+
+
+
+
+# NOTAS
+
+# Other packages to check
+# https://cran.r-project.org/src/contrib/Archive/charlson/
+# https://github.com/ellessenne/comorbidity/
+# https://rpubs.com/nathanh36/jjcdm
+
+
