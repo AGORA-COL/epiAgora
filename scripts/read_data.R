@@ -164,7 +164,11 @@ colnames(resultados) <- c("BD","Muestra", "Casos CIE-10", "Prevalencia por CIE-1
                           "Casos CUPS", "Prevalencia por CUPS", "Casos dx. o CUPS o ATC",
                           "Prevalencia por dx. o CUPS o ATC") #Verificar para reproducibilidad
 
+resultados <- resultados %>% as.data.frame()
+ref_literatura <- read_excel("dat/validacion.xlsx")
+ref_literatura <- ref_literatura %>% filter(enfermedad == "Diabetes Mellitus")
 
+resultados <- resultados %>% mutate(prev_total = NA, prev_literatura = ref_literatura$prevalencia)
 
 
 # NOTAS
