@@ -169,4 +169,6 @@ ref_literatura <- read_excel("dat/validacion.xlsx")
 ref_literatura <- ref_literatura %>% filter(enfermedad == "ERC")
 resultados <- resultados %>% mutate(prev_literatura = ref_literatura$prevalencia)
 
+library(writexl)
+write_xlsx(resultados,'resultadosERC.xlsx')
 

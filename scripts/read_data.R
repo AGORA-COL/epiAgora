@@ -166,6 +166,9 @@ ref_literatura <- read_excel("dat/validacion.xlsx")
 ref_literatura <- ref_literatura %>% filter(enfermedad == "DM")
 resultados <- resultados %>% mutate(prev_literatura = ref_literatura$prevalencia)
 
+library(writexl)
+write_xlsx(resultados,'resultadosDM.xlsx')
+
 
 
 # NOTAS
