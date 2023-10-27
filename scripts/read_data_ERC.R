@@ -1,4 +1,5 @@
-# Rutina para verificación de datos de DM
+
+# Rutina para verificación de datos de ERC
 # Fecha: NOV-2023
 # Proyecto AGORA
 
@@ -6,8 +7,9 @@
 rm(list=ls())
 library(tidyverse)
 library(readxl)
+
 #cod
-cods <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
+cods <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
 names(cods) <- epitrix::clean_labels(names(cods))
 cods <- cods %>% mutate (name_drug = epitrix::clean_labels(codigo_significado))
 
@@ -76,7 +78,7 @@ vector_raices_medic2 <- unique(cods$root)
 datp2_1$dx_target <- FALSE
 for (i in seq_along(vector_raices_medic2)) {
   datp2_1$dx_target <- if_else (datp2_1$dx_target == TRUE, datp2_1$dx_target,
-                                      str_detect(string = datp2_1$name_dx, pattern = vector_raices_medic2[i]))
+                                str_detect(string = datp2_1$name_dx, pattern = vector_raices_medic2[i]))
 }
 sum(datp2_1$dx_target, na.rm = TRUE)/nrow(datp2_1)
 
@@ -94,7 +96,7 @@ sum(datp3$enf_cups, na.rm = TRUE)/nrow(datp3)
 datp3$med_target <- FALSE
 for (i in seq_along(vector_raices_medic)) {
   datp3$med_target <- if_else (datp3$med_target == TRUE, datp3$med_target,
-                                str_detect(string = datp3$name_drug, pattern = vector_raices_medic[i]))
+                               str_detect(string = datp3$name_drug, pattern = vector_raices_medic[i]))
 }
 sum(datp3$med_target, na.rm = TRUE)/nrow(datp3)
 
@@ -125,6 +127,7 @@ sum(datp4$med_target, na.rm = TRUE)/nrow(datp4)
 #Restricción
 datp <- mutate(datp,
                casos = ifelse(enf_cie10 == "1"| enf_cups == "1" | medicamento_target == "TRUE",1,0))
+
 datp2_1<- mutate(datp2_1,
                  casos = ifelse(enf_cie10 == "1"| dx_target == "TRUE",1,0))
 datp3<- mutate(datp3,
@@ -136,11 +139,11 @@ datp4<- mutate(datp4,
 resultados <- data.frame("BD" = c("bd_2011","bd_2012","bd_2014","bd_2015"),
                          "Muestra" = c(nrow(datp),nrow(datp2_1),nrow(datp3),nrow(datp4)),
                          "Casos CIE10" = c(sum(datp$enf_cie10, na.rm = TRUE),sum(datp2_1$enf_cie10, na.rm = TRUE),
-                                            sum(datp3$enf_cie10, na.rm = TRUE),sum(datp4$enf_cie10, na.rm = TRUE)),
+                                           sum(datp3$enf_cie10, na.rm = TRUE),sum(datp4$enf_cie10, na.rm = TRUE)),
                          "Prev CIE10" = c(round(sum(datp$enf_cie10, na.rm = TRUE)/nrow(datp), digits = 4),
-                                           round(sum(datp2_1$enf_cie10, na.rm = TRUE)/nrow(datp2_1), digits = 4),
-                                           round(sum(datp3$enf_cie10, na.rm = TRUE)/nrow(datp3), digits = 4),
-                                           round(sum(datp4$enf_cie10, na.rm = TRUE)/nrow(datp4), digits = 4)),
+                                          round(sum(datp2_1$enf_cie10, na.rm = TRUE)/nrow(datp2_1), digits = 4),
+                                          round(sum(datp3$enf_cie10, na.rm = TRUE)/nrow(datp3), digits = 4),
+                                          round(sum(datp4$enf_cie10, na.rm = TRUE)/nrow(datp4), digits = 4)),
                          "Casos CUPS" = c(sum(datp$enf_cups, na.rm = TRUE),"0",
                                           sum(datp3$enf_cups, na.rm = TRUE),"0"),
                          "Prev CUPS" = c(round(sum(datp$enf_cups, na.rm = TRUE)/nrow(datp), digits = 4),
@@ -159,14 +162,10 @@ resultados <- data.frame("BD" = c("bd_2011","bd_2012","bd_2014","bd_2015"),
                                           round(sum(datp2_1$casos, na.rm = TRUE)/nrow(datp2_1), digits = 4),
                                           round(sum(datp3$casos, na.rm = TRUE)/nrow(datp3), digits = 4),
                                           round(sum(datp4$casos, na.rm = TRUE)/nrow(datp4), digits = 4)
-                                          ))
+                         ))
 
 
-# NOTAS
 
-# Other packages to check
-# https://cran.r-project.org/src/contrib/Archive/charlson/
-# https://github.com/ellessenne/comorbidity/
-# https://rpubs.com/nathanh36/jjcdm
+
 
 
