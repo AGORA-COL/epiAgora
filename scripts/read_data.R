@@ -86,7 +86,7 @@ datp3$enf_cie10 <- NA
 datp3$enf_cie10[datp3$diagnosticocd %in% cods_cie10$codigo] <- 1
 sum(datp3$enf_cie10, na.rm = TRUE)/nrow(datp3)
 
-datp3enf_cups <- NA
+datp3$enf_cups <- NA
 datp3$enf_cups[datp3$procedimientocd %in% cods_cups$codigo] <- 1
 datp3$enf_cups[datp3$procedimientocd %in% names_cups] <- 1
 sum(datp3$enf_cups, na.rm = TRUE)/nrow(datp3)
@@ -122,55 +122,7 @@ sum(datp4$enf_cie10, na.rm = TRUE)/nrow(datp4)
 sum(datp$enf_cups, na.rm = TRUE)/nrow(datp)
 sum(datp3$med_target, na.rm = TRUE)/nrow(datp3)
 sum(datp4$med_target, na.rm = TRUE)/nrow(datp4)
-<<<<<<< HEAD
-#Restricción?
-datp3 %>% filter(enf_cie10 == "1", med_target == "TRUE")
-datp3 %>% filter(enf_cie10 == "1", enf_cups == "1")
-datp4 %>% filter(enf_cie10 == "1", med_target == "TRUE")
 
-resultados <- matrix(c("bd_2011",#bd
-                       "bd_2012",
-                       "bd_2014",
-                       "bd_2015",
-                       nrow(datp),#muestra
-                       nrow(datp2_1),
-                       nrow(datp3),
-                       nrow(datp4),
-                       sum(datp$enf_cie10, na.rm = TRUE),#casos cie-10
-                       sum(datp2_1$enf_cie10, na.rm = TRUE),
-                       sum(datp3$enf_cie10, na.rm = TRUE),
-                       sum(datp4$enf_cie10, na.rm = TRUE),
-                       round(sum(datp$enf_cie10, na.rm = TRUE)/nrow(datp), digits = 4),#prevalencia cie-10
-                       round(sum(datp2_1$enf_cie10, na.rm = TRUE)/nrow(datp2_1), digits = 4),
-                       round(sum(datp3$enf_cie10, na.rm = TRUE)/nrow(datp3), digits = 4),
-                       round(sum(datp4$enf_cie10, na.rm = TRUE)/nrow(datp4), digits = 4),
-                       sum(datp$enf_cups, na.rm = TRUE),#casos cups
-                       "0",
-                       sum(datp3$enf_cups, na.rm = TRUE),
-                       "0",
-                       round(sum(datp$enf_cups, na.rm = TRUE)/nrow(datp), digits = 4),#prevalencia cups
-                       "0",
-                       round(sum(datp3$enf_cups, na.rm = TRUE)/nrow(datp3), digits = 4),
-                       "0",
-                       sum(datp$medicamento_target, na.rm = TRUE),#casos dx. o cups o atc
-                       sum(datp2_1$dx_target, na.rm = TRUE),
-                       sum(datp3$med_target, na.rm = TRUE),
-                       sum(datp4$med_target, na.rm = TRUE),
-                       round(sum(datp$medicamento_target, na.rm = TRUE)/nrow(datp2_1), digits = 4),#prevalencia dx. o cups o atc
-                       round(sum(datp2_1$dx_target, na.rm = TRUE)/nrow(datp2_1), digits = 4),
-                       round(sum(datp3$med_target, na.rm = TRUE)/nrow(datp3), digits = 4),
-                       round(sum(datp4$med_target, na.rm = TRUE)/nrow(datp4), digits = 4)),
-                     nrow = 4)
-colnames(resultados) <- c("BD","Muestra", "Casos CIE-10", "Prevalencia por CIE-10",
-                          "Casos CUPS", "Prevalencia por CUPS", "Casos dx. o CUPS o ATC",
-                          "Prevalencia por dx. o CUPS o ATC") #Verificar para reproducibilidad
-
-resultados <- resultados %>% as.data.frame()
-ref_literatura <- read_excel("dat/validacion.xlsx")
-ref_literatura <- ref_literatura %>% filter(enfermedad == "Diabetes Mellitus")
-
-resultados <- resultados %>% mutate(prev_total = NA, prev_literatura = ref_literatura$prevalencia)
-=======
 #Restricción
 datp <- mutate(datp,
                casos = ifelse(enf_cie10 == "1"| enf_cups == "1" | medicamento_target == "TRUE",1,0))
@@ -182,34 +134,38 @@ datp4<- mutate(datp4,
                casos = ifelse(enf_cie10 == "1"| med_target == "TRUE",1,0))
 
 
-resultados <- data.frame("BD" = c("bd_2011","bd_2012","bd_2014","bd_2015"),
-                         "Muestra" = c(nrow(datp),nrow(datp2_1),nrow(datp3),nrow(datp4)),
-                         "Casos CIE10" = c(sum(datp$enf_cie10, na.rm = TRUE),sum(datp2_1$enf_cie10, na.rm = TRUE),
+resultados <- data.frame("bd" = c("bd_2011","bd_2012","bd_2014","bd_2015"),
+                         "muestra" = c(nrow(datp),nrow(datp2_1),nrow(datp3),nrow(datp4)),
+                         "casos_CIE10" = c(sum(datp$enf_cie10, na.rm = TRUE),sum(datp2_1$enf_cie10, na.rm = TRUE),
                                             sum(datp3$enf_cie10, na.rm = TRUE),sum(datp4$enf_cie10, na.rm = TRUE)),
-                         "Prev CIE10" = c(round(sum(datp$enf_cie10, na.rm = TRUE)/nrow(datp), digits = 4),
+                         "prev_CIE10" = c(round(sum(datp$enf_cie10, na.rm = TRUE)/nrow(datp), digits = 4),
                                            round(sum(datp2_1$enf_cie10, na.rm = TRUE)/nrow(datp2_1), digits = 4),
                                            round(sum(datp3$enf_cie10, na.rm = TRUE)/nrow(datp3), digits = 4),
                                            round(sum(datp4$enf_cie10, na.rm = TRUE)/nrow(datp4), digits = 4)),
-                         "Casos CUPS" = c(sum(datp$enf_cups, na.rm = TRUE),"0",
+                         "casos_CUPS" = c(sum(datp$enf_cups, na.rm = TRUE),"0",
                                           sum(datp3$enf_cups, na.rm = TRUE),"0"),
-                         "Prev CUPS" = c(round(sum(datp$enf_cups, na.rm = TRUE)/nrow(datp), digits = 4),
+                         "prev_CUPS" = c(round(sum(datp$enf_cups, na.rm = TRUE)/nrow(datp), digits = 4),
                                          "0",
                                          round(sum(datp3$enf_cups, na.rm = TRUE)/nrow(datp3), digits = 4),
                                          "0"),
-                         "Casos dx./cups/atc" = c(sum(datp$medicamento_target, na.rm = TRUE),sum(datp2_1$dx_target, na.rm = TRUE),
+                         "casos_dx_cups_atc" = c(sum(datp$medicamento_target, na.rm = TRUE),sum(datp2_1$dx_target, na.rm = TRUE),
                                                   sum(datp3$med_target, na.rm = TRUE),sum(datp4$med_target, na.rm = TRUE)),
-                         "Prev dx./cups/atc" = c(round(sum(datp$medicamento_target, na.rm = TRUE)/nrow(datp2_1), digits = 4),
+                         "prev_dx_cups_atc" = c(round(sum(datp$medicamento_target, na.rm = TRUE)/nrow(datp2_1), digits = 4),
                                                  round(sum(datp2_1$dx_target, na.rm = TRUE)/nrow(datp2_1), digits = 4),
                                                  round(sum(datp3$med_target, na.rm = TRUE)/nrow(datp3), digits = 4),
                                                  round(sum(datp4$med_target, na.rm = TRUE)/nrow(datp4), digits = 4)),
-                         "Casos total" = c(sum(datp$casos, na.rm = TRUE), sum(datp2_1$casos, na.rm = TRUE),
+                         "casos_total" = c(sum(datp$casos, na.rm = TRUE), sum(datp2_1$casos, na.rm = TRUE),
                                            sum(datp3$casos, na.rm = TRUE), sum(datp4$casos, na.rm = TRUE)),
-                         "Prev total" = c(round(sum(datp$casos, na.rm = TRUE)/nrow(datp), digits = 4),
+                         "prev_total" = c(round(sum(datp$casos, na.rm = TRUE)/nrow(datp), digits = 4),
                                           round(sum(datp2_1$casos, na.rm = TRUE)/nrow(datp2_1), digits = 4),
                                           round(sum(datp3$casos, na.rm = TRUE)/nrow(datp3), digits = 4),
                                           round(sum(datp4$casos, na.rm = TRUE)/nrow(datp4), digits = 4)
                                           ))
->>>>>>> faf08b3a275edb1fbea40f754863550a9b7f94a4
+
+ref_literatura <- read_excel("dat/validacion.xlsx")
+ref_literatura <- ref_literatura %>% filter(enfermedad == "DM")
+resultados <- resultados %>% mutate(prev_literatura = ref_literatura$prevalencia)
+
 
 
 # NOTAS
