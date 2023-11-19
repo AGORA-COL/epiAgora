@@ -1,9 +1,15 @@
-
-
 # Rutina para verificación de datos de DM e IRC
-# Fecha: XXX
+# Fecha: NOV-2023
 # Proyecto AGORA
 
+source("fun/f_check.R")
+resultadosdm <- dm(cods, dat, val)
+resultadoserc<- erc(cods, dat, val)
+
+consolidado <- rbind (resultadosdm, resultadoserc)
+
+
+############
 source("fun/f_check.R")
 
 dat <- read_excel()

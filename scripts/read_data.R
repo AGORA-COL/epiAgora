@@ -30,8 +30,7 @@ names(datp2) <- epitrix::clean_labels(names(datp2))
 datp2_1 <- strsplit(datp2$diagnosticoprincipal, "-")
 datp2_1 <- data.frame(datp2, do.call(rbind, datp2_1))
 names(datp2_1)
-names(datp2_1)[15]='codcie10' #Verificar par reproducibilidad
-names(datp2_1)[16]='defcie10' #Verificar par reproducibilidad
+datp2_1 <- datp2_1 %>% rename(codcie10 = X1, defcie10 = X2)
 datp2_1 <- datp2_1 %>% mutate (name_dx = epitrix::clean_labels(defcie10))
 datp2_1$codcie10 <- gsub(" ", "", datp2_1$codcie10)
 #bd3
@@ -47,9 +46,12 @@ datp4 <- datp4 %>% mutate (name_drug = epitrix::clean_labels(medicamento))
 #aplicación bd
 datp$enf_cie10 <- NA
 datp$enf_cie10[datp$diagnosticocd %in% cods_cie10$codigo] <- 1
+
 datp$enf_cups <- NA
-datp$enf_cups[datp$diagnosticocd %in% cods_cups$codigo] <- 1
-datp$enf_cups[datp$medicamentodesc %in% names_cups] <- 1
+datp$enf_cups[datp$procedimientocd %in% cods_cups$codigo] <- 1
+
+datp$enf_med <- NA
+datp$enf_med[datp$medicamentodesc %in% names_cups] <- 1
 
 sum(datp$enf_cie10, na.rm = TRUE)/nrow(datp)
 sum(datp$enf_cups, na.rm = TRUE)/nrow(datp)
@@ -60,7 +62,7 @@ vector_raices_medic <- unique(cods$root) # aquí leer las raices
 datp$medicamento_target <- FALSE
 for (i in seq_along (vector_raices_medic)) {
   datp$medicamento_target <- if_else (datp$medicamento_target == TRUE, datp$medicamento_target,
-                                      str_detect(string = datp$name_drug , pattern = vector_raices_medic[i]))
+                                      str_detect(string = datp$name_drug, pattern = vector_raices_medic[i]))
 }
 
 sum(datp$medicamento_target, na.rm = TRUE)/nrow(datp)
