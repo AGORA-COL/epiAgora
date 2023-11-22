@@ -10,7 +10,7 @@ consolidado <- rbind (resultadosdm, resultadoserc)
 
 
 ############
-source("fun/f_check.R")
+source("fun/class_alg.R")
 
 dat <- read_excel()
 cods <- read_excel()
