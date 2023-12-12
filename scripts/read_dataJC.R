@@ -1,3 +1,4 @@
+#cargar paquetes
 library(tidyverse)
 library(readxl)
 library(purrr)
@@ -6,7 +7,7 @@ library(dplyr)
 library(openxlsx)
 library(stringr)
 
-#source("fun/class_alg.R")
+source("fun/class_alg.R")
 
 #Cargar datos
 #CÓDIGOS DM
@@ -39,39 +40,16 @@ bd2015 <- bd2015 %>% mutate (name = epitrix::clean_labels(medicamento))
 
 #EVIDENCIA
 evidencia <- read_excel("dat/validacion.xlsx")
-evidencia_DM <- evidencia %>% filter(enfermedad == "DM")
-evidencia_ERC <- evidencia %>% filter(enfermedad == "ERC")
 
-#clasificación
-classification <- function(cods, bd) {
-  names(cods) <- epitrix::clean_labels(names(cods))
-  cods <- cods %>% mutate(name_cods = epitrix::clean_labels(codigo_significado))
-  cods_cie10 <- cods %>% filter(tipo == "CIE-10") %>% select(codigo)
-  cods_cups <- cods %>% filter(tipo == "CUPS") %>% select(codigo)
-  names_cups <- cods %>% filter(tipo == "CUPS") %>% select(codigo_significado)
-  names_cups$codigo_significado <- epitrix::clean_labels(names_cups$codigo_significado)
-
-  bd$enf_cie10 <- NA
-  bd$enf_cie10[bd$diagnosticocd %in% cods_cie10$codigo] <- 1
-  bd$enf_cups <- NA
-  bd$enf_cups[bd$procedimientocd %in% cods_cups$codigo] <- 1
-  vector_raices <- unique(cods$root)
-  bd$target <- FALSE
-  for (i in seq_along (vector_raices)) {
-    bd$target <- if_else (bd$target == TRUE, bd$target,
-                              str_detect(string = bd$name, pattern = vector_raices[i]))
-  }
-  bd <- bd |> mutate(casos = ifelse(enf_cie10 == "1"| enf_cups == "1" | target == "TRUE",1,0))
-  return(bd)
-}
-
+#Clasificación DM
 bd2011 <- classification(cods_DM,bd2011)
 bd2012 <- classification(cods_DM,bd2012)
 bd2014 <- classification(cods_DM,bd2014)
 bd2015 <- classification(cods_DM,bd2015)
 
-
 #Creación tabla resultados
+evidencia_DM <- evidencia %>% filter(enfermedad == "DM")
+
 resultadosdm <- data.frame("enf" = "DM",
                            "bd" = c("bd2011","bd2012","bd2014","bd2015"),
                            "muestra" = c(nrow(bd2011),nrow(bd2012),nrow(bd2014),nrow(bd2015)),
@@ -103,14 +81,15 @@ resultadosdm <- data.frame("enf" = "DM",
 
 resultadosdm <- resultadosdm %>% mutate(prev_literatura = evidencia_DM$prevalencia)
 
-#ERC
+#Clasificación ERC
 bd2011 <- classification(cods_ERC,bd2011)
 bd2012 <- classification(cods_ERC,bd2012)
 bd2014 <- classification(cods_ERC,bd2014)
 bd2015 <- classification(cods_ERC,bd2015)
 
-
 #Creación tabla resultados
+evidencia_ERC <- evidencia %>% filter(enfermedad == "ERC")
+
 resultadoserc <- data.frame("enf" = "ERC",
                             "bd" = c("bd2011","bd2012","bd2014","bd2015"),
                             "muestra" = c(nrow(bd2011),nrow(bd2012),nrow(bd2014),nrow(bd2015)),
