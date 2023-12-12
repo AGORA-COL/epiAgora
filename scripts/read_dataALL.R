@@ -46,10 +46,10 @@ bd2012 <- read_excel("dat/bd_2012.xlsx")
 names(bd2012) <- epitrix::clean_labels(names(bd2012))
 bd20122_1 <- strsplit(bd2012$diagnosticoprincipal, "-")
 bd20122_1 <- data.frame(bd2012, do.call(rbind, bd20122_1))
-names(bd20122_1)
 bd20122_1 <- bd20122_1 %>% rename(codcie10 = X1, defcie10 = X2)
 bd20122_1 <- bd20122_1 %>% mutate (name_dx = epitrix::clean_labels(defcie10))
 bd20122_1$codcie10 <- gsub(" ", "", bd20122_1$codcie10)
+
 #bd2012 - cie10
 bd20122_1$enf_cie10 <- NA
 bd20122_1$enf_cie10[bd20122_1$codcie10 %in% cods_cie10$codigo] <- 1
