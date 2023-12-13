@@ -25,6 +25,7 @@ classification <- function(cods, bd) {
   return(bd)
 }
 
+#Tabla de resultados
 resultados <- function(bd, disease) {
   temp <- data.frame("enf" = disease,
                      "bd" = deparse(substitute(bd)),
