@@ -1,3 +1,7 @@
+# Rutina para clasificación de enfermedades
+# Fecha: DIC-2023
+# Proyecto AGORA
+
 #cargar paquetes
 library(tidyverse)
 library(readxl)
@@ -9,11 +13,13 @@ library(stringr)
 
 source("fun/class_alg.R")
 
+diseases <- c("DM", "ERC")
+
 #Cargar datos
 #CÓDIGOS DM
-cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
+cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = diseases[1])
 #CÓDIGOS ERC
-cods_ERC <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
+cods_ERC <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = diseases[2])
 
 #BASE DE DATOS RIPS
 #bd2011
@@ -38,88 +44,51 @@ bd2015 <- read_excel("dat/bd_2015.xlsx")
 names(bd2015) <- epitrix::clean_labels(names(bd2015))
 bd2015 <- bd2015 %>% mutate (name = epitrix::clean_labels(medicamento))
 
+#consolidado
+consolidado <- data.frame(enf = character(),
+                          bd = character(),
+                          muestra = numeric(),
+                          casos_CIE10 = numeric(),
+                          prev_CIE10 = numeric(),
+                          casos_CUPS = numeric(),
+                          prev_CUPS = numeric(),
+                          casos_dx_cups_atc = numeric(),
+                          prev_dx_cups_atc = numeric(),
+                          casos_total = numeric(),
+                          prev_total = numeric(),
+                          prev_literatura = numeric()
+)
+
 #EVIDENCIA
 evidencia <- read_excel("dat/validacion.xlsx")
+
 
 #Clasificación DM
 bd2011 <- classification(cods_DM,bd2011)
 bd2012 <- classification(cods_DM,bd2012)
 bd2014 <- classification(cods_DM,bd2014)
 bd2015 <- classification(cods_DM,bd2015)
-
 #Creación tabla resultados
+disease <- diseases[1]
 evidencia_DM <- evidencia %>% filter(enfermedad == "DM")
+resultados_tabla<-rbind(resultados(bd2011, disease), resultados(bd2012, disease),
+                        resultados(bd2014, disease),resultados(bd2015, disease))
+resultados_tabla <- resultados_tabla %>% mutate(prev_literatura = evidencia_DM$prevalencia)
+consolidado <- rbind (consolidado, resultados_tabla)
 
-resultadosdm <- data.frame("enf" = "DM",
-                           "bd" = c("bd2011","bd2012","bd2014","bd2015"),
-                           "muestra" = c(nrow(bd2011),nrow(bd2012),nrow(bd2014),nrow(bd2015)),
-                           "casos_CIE10" = c(sum(bd2011$enf_cie10, na.rm = TRUE), sum(bd2012$enf_cie10, na.rm = TRUE),
-                                             sum(bd2014$enf_cie10, na.rm = TRUE), sum(bd2015$enf_cie10, na.rm = TRUE)),
-                           "prev_CIE10" = c(round(sum(bd2011$enf_cie10, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                            round(sum(bd2012$enf_cie10, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                            round(sum(bd2014$enf_cie10, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                            round(sum(bd2015$enf_cie10, na.rm = TRUE)/nrow(bd2015), digits = 4)),
-                           "casos_CUPS" = c(sum(bd2011$enf_cups, na.rm = TRUE),"0",
-                                            sum(bd2014$enf_cups, na.rm = TRUE),"0"),
-                           "prev_CUPS" = c(round(sum(bd2011$enf_cups, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                           "0",
-                                           round(sum(bd2014$enf_cups, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                           "0"),
-                           "casos_dx_cups_atc" = c(sum(bd2011$target, na.rm = TRUE), sum(bd2012$target, na.rm = TRUE),
-                                                   sum(bd2014$target, na.rm = TRUE), sum(bd2015$target, na.rm = TRUE)),
-                           "prev_dx_cups_atc" = c(round(sum(bd2011$target, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                                  round(sum(bd2012$target, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                                  round(sum(bd2014$target, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                                  round(sum(bd2015$target, na.rm = TRUE)/nrow(bd2015), digits = 4)),
-                           "casos_total" = c(sum(bd2011$casos, na.rm = TRUE), sum(bd2012$casos, na.rm = TRUE),
-                                             sum(bd2014$casos, na.rm = TRUE), sum(bd2015$casos, na.rm = TRUE)),
-                           "prev_total" = c(round(sum(bd2011$casos, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                            round(sum(bd2012$casos, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                            round(sum(bd2014$casos, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                            round(sum(bd2015$casos, na.rm = TRUE)/nrow(bd2015), digits = 4)
-                           ))
-
-resultadosdm <- resultadosdm %>% mutate(prev_literatura = evidencia_DM$prevalencia)
 
 #Clasificación ERC
 bd2011 <- classification(cods_ERC,bd2011)
 bd2012 <- classification(cods_ERC,bd2012)
 bd2014 <- classification(cods_ERC,bd2014)
 bd2015 <- classification(cods_ERC,bd2015)
-
 #Creación tabla resultados
+disease <- diseases[2]
 evidencia_ERC <- evidencia %>% filter(enfermedad == "ERC")
 
-resultadoserc <- data.frame("enf" = "ERC",
-                            "bd" = c("bd2011","bd2012","bd2014","bd2015"),
-                            "muestra" = c(nrow(bd2011),nrow(bd2012),nrow(bd2014),nrow(bd2015)),
-                            "casos_CIE10" = c(sum(bd2011$enf_cie10, na.rm = TRUE), sum(bd2012$enf_cie10, na.rm = TRUE),
-                                              sum(bd2014$enf_cie10, na.rm = TRUE), sum(bd2015$enf_cie10, na.rm = TRUE)),
-                            "prev_CIE10" = c(round(sum(bd2011$enf_cie10, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                             round(sum(bd2012$enf_cie10, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                             round(sum(bd2014$enf_cie10, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                             round(sum(bd2015$enf_cie10, na.rm = TRUE)/nrow(bd2015), digits = 4)),
-                            "casos_CUPS" = c(sum(bd2011$enf_cups, na.rm = TRUE),"0",
-                                             sum(bd2014$enf_cups, na.rm = TRUE),"0"),
-                            "prev_CUPS" = c(round(sum(bd2011$enf_cups, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                            "0",
-                                            round(sum(bd2014$enf_cups, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                            "0"),
-                            "casos_dx_cups_atc" = c(sum(bd2011$target, na.rm = TRUE), sum(bd2012$target, na.rm = TRUE),
-                                                    sum(bd2014$target, na.rm = TRUE), sum(bd2015$target, na.rm = TRUE)),
-                            "prev_dx_cups_atc" = c(round(sum(bd2011$target, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                                   round(sum(bd2012$target, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                                   round(sum(bd2014$target, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                                   round(sum(bd2015$target, na.rm = TRUE)/nrow(bd2015), digits = 4)),
-                            "casos_total" = c(sum(bd2011$casos, na.rm = TRUE), sum(bd2012$casos, na.rm = TRUE),
-                                              sum(bd2014$casos, na.rm = TRUE), sum(bd2015$casos, na.rm = TRUE)),
-                            "prev_total" = c(round(sum(bd2011$casos, na.rm = TRUE)/nrow(bd2011), digits = 4),
-                                             round(sum(bd2012$casos, na.rm = TRUE)/nrow(bd2012), digits = 4),
-                                             round(sum(bd2014$casos, na.rm = TRUE)/nrow(bd2014), digits = 4),
-                                             round(sum(bd2015$casos, na.rm = TRUE)/nrow(bd2015), digits = 4)
-                            ))
-
-resultadoserc <- resultadoserc %>% mutate(prev_literatura = evidencia_ERC$prevalencia)
+resultados_tabla<-rbind(resultados(bd2011, disease), resultados(bd2012, disease),
+                        resultados(bd2014, disease),resultados(bd2015, disease))
+resultados_tabla <- resultados_tabla %>% mutate(prev_literatura = evidencia_ERC$prevalencia)
 
 #Consolidado
-consolidado <- rbind (resultadosdm, resultadoserc)
+consolidado <- rbind (consolidado, resultados_tabla)

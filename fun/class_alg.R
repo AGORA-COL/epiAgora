@@ -24,3 +24,19 @@ classification <- function(cods, bd) {
   bd <- bd |> mutate(casos = ifelse(enf_cie10 == "1"| enf_cups == "1" | target == "TRUE",1,0))
   return(bd)
 }
+
+resultados <- function(bd, disease) {
+  temp <- data.frame("enf" = disease,
+                     "bd" = deparse(substitute(bd)),
+                     "muestra" = c(nrow(bd)),
+                     "casos_CIE10" = c(sum(bd$enf_cie10, na.rm = TRUE)),
+                     "prev_CIE10" = c(round(sum(bd$enf_cie10, na.rm = TRUE)/nrow(bd), digits = 4)),
+                     "casos_CUPS" = c(sum(bd$enf_cups, na.rm = TRUE)),
+                     "prev_CUPS" = c(round(sum(bd$enf_cups, na.rm = TRUE)/nrow(bd), digits = 4)),
+                     "casos_dx_cups_atc" = c(sum(bd$target, na.rm = TRUE)),
+                     "prev_dx_cups_atc" = c(round(sum(bd$target, na.rm = TRUE)/nrow(bd), digits = 4)),
+                     "casos_total" = c(sum(bd$casos, na.rm = TRUE)),
+
+                     "prev_total" = c(round(sum(bd$casos, na.rm = TRUE)/nrow(bd), digits = 4)))
+  return(temp)
+}
