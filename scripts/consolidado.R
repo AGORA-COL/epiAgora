@@ -98,4 +98,4 @@ resultados_tabla <- resultados_tabla %>% mutate(prev_literatura = evidencia_ERC$
 consolidado <- rbind (consolidado, resultados_tabla)
 
 
-saveRDS
+saveRDS(consolidado, "output/consolidado.RDS")
