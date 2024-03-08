@@ -1,3 +1,16 @@
+############################################
+# CÁLCULO DE PREVALENCIA DE DM POR 3 VÍAS
+############################################
+
+
+
+###################################
+#Proyecto AGORA
+#Fecha: 07-marzo-2023
+#Versión: Jennifer Murillo
+###################################
+
+
 library(arrow)
 library(dplyr)
 library(openxlsx)
@@ -5,9 +18,13 @@ library(readxl)
 library(stringr)
 library(comorbidity)
 library(tidyr)
+library(reshape2)
 
 
 
+#--------
+#DATOS:
+#--------
 #Muestra Bogotá: 35'351.724 (2018 a 2022)
 #sample_df_bogota_parquet <- read_parquet("dat/sample_df_bogota_parquet") %>% mutate(ID_uniq = row_number())
 
@@ -16,9 +33,9 @@ subsample_df_bogota <- readRDS("dat/subsample_parquet") %>% mutate(ID_uniq = row
 
 
 
-#--------------------------------
-# USANDO PAQUETE COMORBIDITY
-#--------------------------------
+#-----------------------------------
+# VIA 1: USANDO PAQUETE COMORBIDITY
+#-----------------------------------
 
 #Se crea dataset con pacientes identificados según sus comorbilidades:
 comorb_pack<-comorbidity(x = subsample_df_bogota, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
@@ -33,28 +50,21 @@ p_renal <- mean(comorb_pack$rend == 1, na.rm = TRUE)
 
 prevalencias_comorbidity <- comorb_pack %>%
   summarise(
-    dm_sin_complicacion = sum(diab == 1) / n(),
-    dm_con_complicacion = sum(diabwc == 1) / n(),
-    dm_general = sum(diab == 1 | diabwc == 1) / n(),
-    enfermedad_renal = sum(rend == 1) / n()
+    dm_sin_complicacion = sum(diab == 1) / n() * 100,
+    dm_con_complicacion = sum(diabwc == 1) / n() * 100,
+    dm_general = sum(diab == 1 | diabwc == 1) / n() * 100,
+    enfermedad_renal = sum(rend == 1) / n() * 100
   ) %>%
   melt(id.vars = NULL, value.name = "Prevalencia", variable.name = "Patología") 
 
 
 
 
+#----------------------------------------
+# VIA 2: USANDO LISTA DE CÓDIGOS CIE-10
+#----------------------------------------
 
-# Se muestran las prevalencias:
-Prevalencias <- data.frame(
-  Variable = c("Diabetes sin complicaciones", "Diabetes con complicaciones", "Diabetes Total", "Enfermedad Renal"),
-  Prevalencia = c(p_diab, p_diabnocompli, p_diabt, p_renal)
-)
-
-
-
-#--------------------------------
-# USANDO LISTA DE CÓDIGOS CIE-10
-#--------------------------------
+#lista CIE-10 descargada de página ...
 
 cie10_dm <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie-dm") 
 subsample_bta <- subsample_df_bogota %>%
@@ -68,9 +78,9 @@ subsample_bta <- subsample_df_bogota %>%
 # Contar cuántos dx hay de diabetes, contando una vez cada "personaid"
 prevalencias_cie10T <- subsample_bta %>%
   summarise(
-    Prevalencia_dm = sum(dm == 1) / n(),
-    Prevalencia_dm_t1 = sum(dm_t1 == 1) / n(),
-    Prevalencia_dm_t2 = sum(dm_t2 == 1) / n()
+    Prevalencia_dm = sum(dm == 1) / n() * 100,
+    Prevalencia_dm_t1 = sum(dm_t1 == 1) / n() * 100,
+    Prevalencia_dm_t2 = sum(dm_t2 == 1) / n() * 100
   ) %>%
   melt(id.vars = NULL, value.name = "Prevalencia", variable.name = "Tipo")
 
@@ -80,12 +90,37 @@ prevalencias_cie10 <- subsample_bta %>%
   mutate(Year = format(fechaid, "%Y")) %>%
   group_by(Year) %>%
   summarise(
-    dm = sum(dm == 1) / n(),
-    dm_tipo1 = sum(dm_t1 == 1) / n(),
-    dm_tipo2 = sum(dm_t2 == 1) / n()
+    dm = sum(dm == 1) / n() * 100,
+    dm_tipo1 = sum(dm_t1 == 1) / n() * 100,
+    dm_tipo2 = sum(dm_t2 == 1) / n() * 100
   ) %>%
   melt(id.vars = "Year", value.name = "Prevalencia", variable.name = "Patología") %>% 
   spread(key = Year, value = Prevalencia)
+
+
+
+#---------------------------------------------
+# VIA 3: USANDO CÓDIGOS Y FUNCIÓN DE DANIELA
+#---------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
