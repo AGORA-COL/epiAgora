@@ -31,7 +31,7 @@ library(reshape2)
 #Subuestra Bogotá: 1,767,586 (2018 a 2022)
 subsample_df_bogota <- readRDS("dat/subsample_parquet") %>% mutate(ID_uniq = row_number())
 
-
+#Pirámide poblacional 
 
 #-----------------------------------
 # VIA 1: USANDO PAQUETE COMORBIDITY
