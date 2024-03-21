@@ -44,7 +44,13 @@ subsample_df_bogota <- mutate(subsample_df_bogota, edad_num = as.numeric(edad))
 # Unir las categorías de la variable "sexo"
 subsample_df_bogota$sexo <- ifelse(subsample_df_bogota$sexodesc %in% c("F", "FEMENINO"), "Mujeres",
                                    ifelse(subsample_df_bogota$sexodesc %in% c("M", "MASCULINO"), "Hombres",
-                                          as.character(subsample_df_bogota$sexodesc)))
+                                          ifelse(subsample_df_bogota$sexodesc %in% c("N", "NO DEFINIDO"), "Sin dato",
+                                          as.character(subsample_df_bogota$sexodesc))))
+
+subsample_df_bta_pir <-  subsample_df_bogota %>% filter(sexo %in% c("Mujeres","Hombres"))
+
+
+
 
 
 # Pirámide poblacional
@@ -53,42 +59,72 @@ breaks <- c(seq(0, 80, by = 5), Inf)  # Agregar "Inf" para el último grupo "má
 
 # Asignar a cada individuo un grupo de edad quinquenal con etiquetas personalizadas
 etiquetas <- paste0(breaks[-length(breaks)], " a ", breaks[-1])
-subsample_df_bogota$edad_quinquenal <- cut(subsample_df_bogota$edad_num, breaks = breaks,
+subsample_df_bta_pir$edad_quinquenal <- cut(subsample_df_bta_pir$edad_num, breaks = breaks,
                                            labels = etiquetas, include.lowest = TRUE)
 
-# Número de personas en cada grupo de edad y sexo
-conteo_grupo_edad <- with(subsample_df_bogota, table(edad_quinquenal, sexo))
+# Calcular el total de cada sexo
+total_hombres <- sum(subsample_df_bta_pir$sexo == "Hombres")
+total_mujeres <- sum(subsample_df_bta_pir$sexo == "Mujeres")
+
+tabla_edad <- subsample_df_bta_pir %>%
+  group_by(edad_quinquenal, sexo) %>%
+  summarise(total_personas = n()) %>%
+  group_by(edad_quinquenal) %>%
+  mutate(porcentaje = ifelse(sexo == "Hombres", total_personas / total_hombres * 100,
+                             total_personas / total_mujeres * 100))
+
 
 # Gráfico de barras para la pirámide poblacional
-piramide <- ggplot(data = as.data.frame(conteo_grupo_edad), aes(x = edad_quinquenal, y = ifelse(sexo == "Mujeres", Freq, -Freq), fill = sexo)) +
+piramide <- ggplot(data = as.data.frame(tabla_edad), aes(x = edad_quinquenal, y = ifelse(sexo == "Hombres", porcentaje, -porcentaje), fill = sexo)) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = abs, breaks = seq(-100000, 100000, 20000)) +
-  labs(x = "Grupo de Edad", y = "Población", title = "Pirámide Poblacional") +
+  scale_y_continuous(labels = abs, breaks = seq(-10, 10, 2), limits = c(-10, 10)) +
+  labs(x = "Grupo de Edad", y = "% Población", title = "Pirámide Poblacional") +
   scale_fill_manual(values = c("Mujeres" = "darkred", "Hombres" = "midnightblue")) +
   theme_minimal() +
   coord_flip()
 
 piramide
 
+
+
+
 #####
 
 #Para año 2018
-subsample_df_bogota_2018 <- subset(subsample_df_bogota, anio == "2018")
-conteo_grupo_edad_2018 <- with(subsample_df_bogota_2018, table(edad_quinquenal, sexo))
+subsample_df_bta_pir_2018 <- subset(subsample_df_bta_pir, anio == "2018")
+# Calcular el total de cada sexo
+total_hombres_2018 <- sum(subsample_df_bta_pir_2018$sexo == "Hombres")
+total_mujeres_2018 <- sum(subsample_df_bta_pir_2018$sexo == "Mujeres")
 
-piramide_2018 <- ggplot(data = as.data.frame(conteo_grupo_edad_2018),
-                        aes(x = edad_quinquenal, y = ifelse(sexo == "Mujeres", Freq, -Freq), fill = sexo)) +
+tabla_edad_2018 <- subsample_df_bta_pir_2018 %>%
+  group_by(edad_quinquenal, sexo) %>%
+  summarise(total_personas = n()) %>%
+  group_by(edad_quinquenal) %>%
+  mutate(porcentaje = ifelse(sexo == "Hombres", total_personas / total_hombres_2018 * 100,
+                             total_personas / total_mujeres_2018 * 100))
+
+
+
+
+piramide_2018 <- ggplot(data = as.data.frame(tabla_edad_2018), aes(x = edad_quinquenal, y = ifelse(sexo == "Hombres", porcentaje, -porcentaje), fill = sexo)) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = abs, breaks = seq(-100000, 100000, 10000)) +
-  labs(x = "Grupo de Edad", y = "Población", title = "Pirámide Poblacional - 2018") +
+  scale_y_continuous(labels = abs, breaks = seq(-10, 10, 2), limits = c(-10, 10)) +
+  labs(x = "Grupo de Edad", y = "% Población", title = "Pirámide Poblacional") +
   scale_fill_manual(values = c("Mujeres" = "darkred", "Hombres" = "midnightblue")) +
   theme_minimal() +
   coord_flip()
 
 piramide_2018
 
-#grid.arrange(piramide, piramide_2018, ncol = 2)
+grid.arrange(piramide, piramide_2018, ncol = 2)
+
+#Se compara con el artículo: "El uso de pirámides poblacionales como representación gráfica del sistema de salud colombiano";  https://www.redalyc.org/journal/2738/273856494013/html/
+
 #####
+
+subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num>=18)
+
+
 
 
 ##############################################################
@@ -132,7 +168,7 @@ prevalencias_comorbidity <- comorb_pack %>%
   melt(id.vars = NULL, value.name = "Prevalencia", variable.name = "Patología")
 
 
-tabla_comorbidity <- casos_comorbidity %>%
+tabla_comorbidity_sin18 <- casos_comorbidity %>%
   left_join(prevalencias_comorbidity %>% select(Patología, Prevalencia), by = "Patología")
 
 
@@ -319,11 +355,7 @@ cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) 
 
 
 
-
-
-
-
-
+#comparación cie10 con artículos
 
 
 
