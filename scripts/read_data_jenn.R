@@ -277,14 +277,14 @@ resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, v
 #TABLA DE DX (CIE10) REGISTRADOS EN LA BASE DE DATOS DE TODO BOGOTÁ, POR AÑO
 df_pivot_dxprincipal <- read_excel("dat/df_pivot_dxprincipalfinal.xlsx")
 
-#arhivo lista de códigos CIE10
+#arhivo lista de códigos CIE10 (12,648 códigos)
 cie10 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie10")
 
 #identificación de las descripciones de cada código cie10
 df_pivot_con_descripcion <- df_pivot_dxprincipal %>% left_join(cie10, by = c("dxprincipal" = "codigo"))
 
 #write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
-cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #819 (6.6% no identificados)
+cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #789 (6.2% no identificados)
 
 
 
@@ -293,19 +293,29 @@ cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion))
 df_pivot_cups <- read_excel("dat/df_pivot_procedimientos.xlsx")
 
 #Archivos de códigos CUPS:
-cups2009 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2009") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
-cups2019 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2019") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
-cups2021 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2021") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
-cups2022 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2022") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
-cups2024 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2024") %>% mutate(descripcion = epitrix::clean_labels(descripcion)) %>% select(-nombre)
-
-cups2009 <- cups2009 %>% mutate(codigo = as.character(codigo))
-cups2019 <- cups2019 %>% mutate(codigo = as.character(codigo))
+#Fuente: https://www.minsalud.gov.co/salud/POS/paginas/plan-obligatorio-de-salud-pos.aspx
+cups2009 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2009", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2015 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2015", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2016 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2016", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2017 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2017", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2018 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2018", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2019 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2019", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2020 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2020", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2021 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2021", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2022 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2022", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2023 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2023", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2024 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2024", col_types = c("text", "text")) %>% mutate(descripcion = epitrix::clean_labels(descripcion))
 
 cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
+                               cups2015 %>% mutate(aniocups = "cups2015"),
+                               cups2016 %>% mutate(aniocups = "cups2016"),
+                               cups2017 %>% mutate(aniocups = "cups2017"),
+                               cups2018 %>% mutate(aniocups = "cups2018"),
                                cups2019 %>% mutate(aniocups = "cups2019"),
+                               cups2020 %>% mutate(aniocups = "cups2020"),
                                cups2021 %>% mutate(aniocups = "cups2021"),
                                cups2022 %>% mutate(aniocups = "cups2022"),
+                               cups2023 %>% mutate(aniocups = "cups2023"),
                                cups2024 %>% mutate(aniocups = "cups2024") )
 
 #identificación de las descripciones de cada cups
@@ -314,16 +324,7 @@ df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("cod
 
 
 #write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
-cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #712  (5.9%) no identificados
-
-
-
-
-
-#comparación cie10 con artículos
-
-
-
+cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #23  (%) no identificados
 
 
 
