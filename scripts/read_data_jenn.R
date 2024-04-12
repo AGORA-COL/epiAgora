@@ -7,6 +7,7 @@
 
 library(arrow)
 library(dplyr)
+library(tidyr)
 library(openxlsx)
 library(readxl)
 library(stringr)
@@ -31,16 +32,15 @@ subsample_df_bogota <- readRDS("dat/subsample_parquet") %>% mutate(ID_uniq = row
 #Data cleaning
 #---------------
 
-#AÑO DE CONSULTA
+#Año de consulta
 subsample_df_bogota <- subsample_df_bogota %>%
-                  mutate(fechaid = as.Date(fechaid, format = "%Y%m%d"),
-                         anio = format(fechaid, "%Y"))
+                       mutate(fechaid = as.Date(fechaid, format = "%Y%m%d"),
+                              anio = format(fechaid, "%Y"))
 
-#EDAD
+#Edad
 subsample_df_bogota <- mutate(subsample_df_bogota, edad_num = as.numeric(edad))
 
-#SEXO
-# Unir las categorías de la variable "sexo"
+#Sexo
 subsample_df_bogota$sexo <- ifelse(subsample_df_bogota$sexodesc %in% c("F", "FEMENINO"), "Mujeres",
                                    ifelse(subsample_df_bogota$sexodesc %in% c("M", "MASCULINO"), "Hombres",
                                           ifelse(subsample_df_bogota$sexodesc %in% c("N", "NO DEFINIDO"), "Sin dato",
@@ -52,15 +52,15 @@ subsample_df_bta_pir <-  subsample_df_bogota %>% filter(sexo %in% c("Mujeres","H
 
 
 
-# Pirámide poblacional
-# Definir los grupos de edad de 5 años hasta los 80 años
-breaks <- c(seq(0, 80, by = 5), Inf)  # Agregar "Inf" para el último grupo "más de 80"
+#Pirámide poblacional
+#Grupos de edad de 5 años hasta los 80 años
+breaks <- c(seq(0, 80, by = 5), Inf)  #"Inf" para el último grupo "más de 80"
 
 etiquetas <- paste0(breaks[-length(breaks)], " a ", breaks[-1])
 subsample_df_bta_pir$edad_quinquenal <- cut(subsample_df_bta_pir$edad_num, breaks = breaks,
                                            labels = etiquetas, include.lowest = TRUE)
 
-# Total por sexo
+#Total por sexo
 total_hombres <- sum(subsample_df_bta_pir$sexo == "Hombres")
 total_mujeres <- sum(subsample_df_bta_pir$sexo == "Mujeres")
 
@@ -72,7 +72,7 @@ tabla_edad <- subsample_df_bta_pir %>%
                              total_personas / total_mujeres * 100))
 
 
-# Gráfico de barras para la pirámide poblacional
+#Gráfico de barras para la pirámide poblacional
 piramide <- ggplot(data = as.data.frame(tabla_edad), aes(x = edad_quinquenal, y = ifelse(sexo == "Hombres", porcentaje, -porcentaje), fill = sexo)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = abs, breaks = seq(-10, 10, 2), limits = c(-10, 10)) +
@@ -90,7 +90,7 @@ piramide
 
 #Para año 2018
 subsample_df_bta_pir_2018 <- subset(subsample_df_bta_pir, anio == "2018")
-# Total por sexo
+#Total por sexo
 total_hombres_2018 <- sum(subsample_df_bta_pir_2018$sexo == "Hombres")
 total_mujeres_2018 <- sum(subsample_df_bta_pir_2018$sexo == "Mujeres")
 
@@ -130,136 +130,62 @@ subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num>=18)
 ##############################################################
 
 
+#Función de tablas de resultados
+
+#por casos
+tabla_resultados <- function(data, variables) {
+
+  casos <- numeric(length(variables))
+  n <- numeric(length(variables))
+  prevalencias <- numeric(length(variables))
+
+  for (i in seq_along(variables)) {
+  casos[i] <- sum(data[[variables[i]]] == 1, na.rm = TRUE)
+  n[i] <- sum(!is.na(data[[variables[i]]]))
+  prevalencias[i] <- (casos[i] / n[i] )*100  }
+
+  return(data.frame(Patología = variables, Casos = casos, n = n, Prevalencia=prevalencias))
+}
+
+
+#por año
+tabla_anioresultados <- function(data, variables) {
+   resultados <- data.frame(Variable = variables)
+
+   #Prevalencia por año
+   for (anio in sort(unique(data$anio))) {
+   prevalencia_anio <- numeric(length(variables))
+
+   for (i in seq_along(variables)) {
+   prevalencia_anio[i] <- (sum(data[[variables[i]]] == 1 & data$anio == anio, na.rm = TRUE) / sum(data$anio == anio, na.rm = TRUE)) * 100
+   }
+   resultados$prevalencia_anio <- prevalencia_anio
+   colnames(resultados)[ncol(resultados)] <- paste(anio)
+   }
+  #Prevalencia total
+  prevalencia <- numeric(length(variables))
+  for (i in seq_along(variables)) {
+  prevalencia[i] <- (sum(data[[variables[i]]] == 1, na.rm = TRUE) / sum(!is.na(data[[variables[i]]]))) * 100
+  }
+
+  resultados <- cbind(resultados, prevalencia)
+  return(resultados)
+  }
+
+
+
 #-----------------------------------
 # VIA 1: USANDO PAQUETE COMORBIDITY
 #-----------------------------------
 
 #Se crea dataset con pacientes identificados según sus comorbilidades:
 comorb_pack<-comorbidity(x = subsample_df_bogota, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
-View(comorb_pack) #1'142.343 sin duplicados
+#View(comorb_pack) #1'142.343 sin duplicados
 
-# Se calculan las prevalencias:
-p_diab <- mean(comorb_pack$diab == 1, na.rm = TRUE)
-p_diabnocompli <- mean(comorb_pack$diabwc == 1, na.rm = TRUE)
-p_diabt <- mean(comorb_pack$diab == 1 | comorb_pack$diabwc == 1, na.rm = TRUE)
-p_renal <- mean(comorb_pack$rend == 1, na.rm = TRUE)
-
-
-#Tabla resultado
-casos_comorbidity <- comorb_pack %>%
-  summarise(
-    dm_sin_complicacion = sum(diab == 1),
-    dm_con_complicacion = sum(diabwc == 1),
-    dm_general = sum(diab == 1 | diabwc == 1),
-    enfermedad_renal = sum(rend == 1)
-  ) %>%
-  melt(id.vars = NULL, value.name = "casos", variable.name = "Patología")%>%
-  mutate(n = nrow(comorb_pack))
-
-prevalencias_comorbidity <- comorb_pack %>%
-  summarise(
-    dm_sin_complicacion = sum(diab == 1) / n() * 100,
-    dm_con_complicacion = sum(diabwc == 1) / n() * 100,
-    dm_general = sum(diab == 1 | diabwc == 1) / n() * 100,
-    enfermedad_renal = sum(rend == 1) / n() * 100
-  ) %>%
-  melt(id.vars = NULL, value.name = "Prevalencia", variable.name = "Patología")
-
-
-tabla_comorbidity_sin18 <- casos_comorbidity %>%
-  left_join(prevalencias_comorbidity %>% select(Patología, Prevalencia), by = "Patología")
-
-
-
-
-#-------------------------------------------------------------------------------------------
-
-#lista CIE-10 descargada de la página de SISPRO (https://web.sispro.gov.co/WebPublico/Consultas/ConsultarDetalleReferenciaBasica.aspx?Code=CIE10)
-cie10_dm <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie-dm")
-
-#Se dejan solo las variables que se van a usar de la base total yse identifica aquellos registros que tienen códigos CIE10 de diabetes
-subsample_bta <- subsample_df_bogota %>%
-  select(ID_uniq, personaid, dxprincipal, codigoprocedimiento, fechaid, anio) %>% #Se seleccionan solo las variables a usar para que quede menos pesada (mas el id único por si se requiere traer alguna otra variable después)
-  mutate(dm = ifelse(dxprincipal %in% cie10_dm$codigo, 1, 0),
-         dm_sincomp = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$charlson_clas == "Diabetes without chronic complication"], 1, 0),
-         dm_concomp = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$charlson_clas == "Diabetes with chronic complication"], 1, 0))
-
-
-# Contar duplicados según personaid
-duplicados_por_personaid <- subsample_df_bogota %>%
-  group_by(personaid) %>%
-  summarise(cantidad_duplicados = n() - n_distinct(personaid)) %>%
-  filter(cantidad_duplicados > 0)
-
-duplicados <- subsample_bta %>% filter(dm == 1) %>%  group_by(personaid) %>%  filter(n() > 1) %>%  summarise(cantidad_duplicados = n())
-
-
-#filtrado
-
-# Paso 1: Filtrar aquellos con mismo personaid y dm_sincomp igual a 1
-subsample_bta_filtrado <- subsample_bta %>%
-  group_by(personaid) %>%
-  filter(!(any(dm_sincomp == 1 & n() > 1)))
-
-# Paso 2: Filtrar aquellos con mismo personaid y dm_concomp igual a 1
-subsample_bta_filtrado <- subsample_bta_filtrado %>%
-  group_by(personaid) %>%
-  filter(!(any(dm_concomp == 1 & n() > 1)))
-
-
-
-
-# Cuántos dx hay de diabetes, contando una vez cada "personaid"
-#Tabla resultado
-#Por año
-#Tabla resultado
-prevalencias_cie102 <- subsample_bta %>%
-  group_by(anio) %>%
-  summarise(
-    dm = sum(dm == 1) / n() * 100,
-    dm_sincomp = sum(dm_sincomp == 1) / n() * 100,
-    dm_concomp = sum(dm_concomp == 1) / n() * 100
-  ) %>%
-  melt(id.vars = "anio", value.name = "Prevalencia", variable.name =  "Tipo") %>%
-  spread(key = anio, value = Prevalencia)
-
-
-prevalencias_cie10t2 <- subsample_bta %>%
-  summarise(
-    dm = sum(dm == 1) / n() * 100,
-    dm_sincomp = sum(dm_sincomp == 1) / n() * 100,
-    dm_concomp = sum(dm_concomp == 1) / n() * 100
-  ) %>%
-  melt(id.vars = NULL, value.name = "P_gral", variable.name = "Tipo")
-
-tabla_cie102 <- prevalencias_cie102 %>%
-  left_join(prevalencias_cie10t2 %>% select(Tipo, P_gral), by = "Tipo")
-
-
-##por casos:
-casos_cie102 <- subsample_bta %>%
-  summarise(
-    dm = sum(dm == 1) ,
-    dm_sincomp = sum(dm_sincomp == 1),
-    dm_concomp = sum(dm_concomp == 1) ) %>%
-  melt(id.vars = NULL, value.name = "Casos", variable.name =  "Tipo") %>%
-  mutate(n = nrow(subsample_bta))
-
-tabla_cie10cas2 <- casos_cie102 %>%
-  left_join(prevalencias_cie10t2 %>% select(Tipo, P_gral), by = "Tipo")
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Tabla de resultados mediante la función
+comorb_pack$diabTotal <- ifelse(comorb_pack$diab == 1 | comorb_pack$diabwc == 1, 1,0 )
+variables_comorbidity <-c("diab", "diabwc", "diabTotal", "rend")
+resultados_comorbidity <- tabla_resultados(data = comorb_pack, variables = variables_comorbidity)
 
 
 
@@ -267,56 +193,26 @@ tabla_cie10cas2 <- casos_cie102 %>%
 # VIA 2: USANDO LISTA DE CÓDIGOS CIE-10
 #----------------------------------------
 
-#lista CIE-10 descargada de la página de SISPRO (https://web.sispro.gov.co/WebPublico/Consultas/ConsultarDetalleReferenciaBasica.aspx?Code=CIE10)
+#Lista CIE-10 descargada de la página de SISPRO (https://web.sispro.gov.co/WebPublico/Consultas/ConsultarDetalleReferenciaBasica.aspx?Code=CIE10)
 cie10_dm <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie-dm")
 
-#Se dejan solo las variables que se van a usar de la base total yse identifica aquellos registros que tienen códigos CIE10 de diabetes
 subsample_bta <- subsample_df_bogota %>%
-                 select(ID_uniq, personaid, dxprincipal, codigoprocedimiento, fechaid, anio) %>% #Se seleccionan solo las variables a usar para que quede menos pesada (mas el id único por si se requiere traer alguna otra variable después)
+                 select(ID_uniq, personaid, dxprincipal, codigoprocedimiento, fechaid, anio) %>%
                  mutate(dm = ifelse(dxprincipal %in% cie10_dm$codigo, 1, 0),
                         dm_t1 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t1"], 1, 0),
                         dm_t2 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t2"], 1, 0))
 
 
 # Cuántos dx hay de diabetes, contando una vez cada "personaid"
-#Tabla resultado
-
-#Por año
-#Tabla resultado
-prevalencias_cie10 <- subsample_bta %>%
-  group_by(anio) %>%
-  summarise(
-    dm = sum(dm == 1) / n() * 100,
-    dm_tipo1 = sum(dm_t1 == 1) / n() * 100,
-    dm_tipo2 = sum(dm_t2 == 1) / n() * 100
-  ) %>%
-  melt(id.vars = "anio", value.name = "Prevalencia", variable.name =  "Tipo") %>%
-  spread(key = anio, value = Prevalencia)
 
 
-prevalencias_cie10t <- subsample_bta %>%
-  summarise(
-    dm = sum(dm == 1) / n() * 100,
-    dm_tipo1 = sum(dm_t1 == 1) / n() * 100,
-    dm_tipo2 = sum(dm_t2 == 1) / n() * 100
-  ) %>%
-  melt(id.vars = NULL, value.name = "P_gral", variable.name = "Tipo")
-
-tabla_cie10 <- prevalencias_cie10 %>%
-  left_join(prevalencias_cie10t %>% select(Tipo, P_gral), by = "Tipo")
+#Tabla de resultados
+variables_cie10_dm <-c("dm_t1", "dm_t2", "dm")
+resultados_comorbidity <- tabla_resultados(data = subsample_bta, variables = variables_cie10_dm)
+resultados_comorbidity_anios <- tabla_anioresultados(data = subsample_bta, variables = variables_cie10_dm)
 
 
-##por casos:
-casos_cie10 <- subsample_bta %>%
-  summarise(
-    dm = sum(dm == 1) ,
-    dm_tipo1 = sum(dm_t1 == 1),
-    dm_tipo2 = sum(dm_t2 == 1) ) %>%
-  melt(id.vars = NULL, value.name = "Casos", variable.name =  "Tipo") %>%
-  mutate(n = nrow(subsample_bta))
 
-tabla_cie10cas <- casos_cie10 %>%
-  left_join(prevalencias_cie10t %>% select(Tipo, P_gral), by = "Tipo")
 
 
 #--------------------------------------------------
@@ -324,7 +220,7 @@ tabla_cie10cas <- casos_cie10 %>%
 #--------------------------------------------------
 
 
-# FUNCION
+#FUNCION
 
 #clasificación
 classification <- function(cods, bd) {
@@ -361,40 +257,11 @@ subsample_bogota_c <- classification(cods_DM, subsample_bogotaf)
 #Evidencia
 evidencia <- read_excel("dat/validacion.xlsx")
 
+
 #Tabla de resultados
-#por año:
-prevalencia_cupsdaniela <- subsample_bogota_c %>%
-    group_by(anio) %>%
-    summarise(
-      dm_cie10 = sum(enf_cie10 == 1) / n() * 100,
-      dm_cups = sum(enf_cups == 1) / n() * 100,
-      dm_total = sum(casos == 1) / n() * 100 ) %>%
-  melt(id.vars = "anio", value.name = "Prevalencia", variable.name =  "Tipo") %>%
-  spread(key = anio, value = Prevalencia)
-
-prevalencia_cupsdanielaT <- subsample_bogota_c %>%
-  summarise(
-    dm_cie10 = sum(enf_cie10 == 1) / n() * 100,
-    dm_cups = sum(enf_cups == 1) / n() * 100,
-    dm_total = sum(casos == 1) / n() * 100 ) %>%
-  melt(id.vars = NULL, value.name = "P_gral", variable.name = "Tipo")
-
-tabla_cupsd <- prevalencia_cupsdaniela %>%
-  left_join(prevalencia_cupsdanielaT %>% select(Tipo, P_gral), by = "Tipo")
-
-
-
-##por casos:
-casos_cupsdaniela <- subsample_bogota_c %>%
-  summarise(
-    dm_cie10 = sum(enf_cie10 == 1) ,
-    dm_cups = sum(enf_cups == 1) ,
-    dm_total = sum(casos == 1) ) %>%
-  melt(id.vars = NULL, value.name = "Casos", variable.name =  "Tipo") %>%
-  mutate(n = nrow(subsample_bogota_c))
-
-tabla_cupsdcas <- casos_cupsdaniela %>%
-  left_join(prevalencia_cupsdanielaT %>% select(Tipo, P_gral), by = "Tipo")
+variables_cie10_cups <-c("enf_cie10", "enf_cups", "casos")
+resultados_cie10_cups <- tabla_resultados(data = subsample_bogota_c, variables = variables_cie10_cups)
+resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, variables = variables_cie10_cups)
 
 
 
@@ -422,23 +289,32 @@ cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion))
 
 
 
-#TABLA DE CUPS REGISTRADOS EN LA BASE DE DATOS DE TODO BOGOTÁ, POR AÑO
+#TABLA DE CUPS REGISTRADOS EN LA BASE DE DATOS DE TODO BOGOTÁ, POR AÑO (12,062)
 df_pivot_cups <- read_excel("dat/df_pivot_procedimientos.xlsx")
 
 #Archivos de códigos CUPS:
+cups2009 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2009") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
+cups2019 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2019") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
 cups2021 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2021") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
 cups2022 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2022") %>% mutate(descripcion = epitrix::clean_labels(descripcion))
 cups2024 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cups2024") %>% mutate(descripcion = epitrix::clean_labels(descripcion)) %>% select(-nombre)
 
-cups_todos <- dplyr::bind_rows(cups2021 %>% mutate(aniocups = "cups2021"),
+cups2009 <- cups2009 %>% mutate(codigo = as.character(codigo))
+cups2019 <- cups2019 %>% mutate(codigo = as.character(codigo))
+
+cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
+                               cups2019 %>% mutate(aniocups = "cups2019"),
+                               cups2021 %>% mutate(aniocups = "cups2021"),
                                cups2022 %>% mutate(aniocups = "cups2022"),
                                cups2024 %>% mutate(aniocups = "cups2024") )
 
 #identificación de las descripciones de cada cups
 df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("codigoprocedimiento" = "codigo"))
 
+
+
 #write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
-cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #2833 (9.4%) no identificados
+cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #712  (5.9%) no identificados
 
 
 
