@@ -291,12 +291,10 @@ cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
 #Base de datos subsample de Bogotá
 subsample_bogotaf <- subsample_df_bogota %>% rename(diagnosticocd = dxprincipal, procedimientocd = codigoprocedimiento)
 
+
 #PARA DM
 #Hoja que contine los cups clasificados
 cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
-#subsample_bogotaH <- subsample_bogotaf %>% filter(tipoeventoripsdesc %in% c("H", "HOSPITALIZACIONES"))
-#subsample_bogotaH <- subsample_bogotaH %>% filter(edad>=18)
-
 #Clasificación de los registros de la base de datos de Bogotá con la función
 subsample_bogota_c <- classification(cods_DM, subsample_bogotaf)
 #Evidencia
@@ -311,13 +309,11 @@ resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, v
 #PARA ERC
 #Hoja que contine los cups clasificados
 cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
-#subsample_bogotaH <- subsample_bogotaf %>% filter(tipoeventoripsdesc %in% c("H", "HOSPITALIZACIONES"))
-#subsample_bogotaH <- subsample_bogotaH %>% filter(edad>=18)
-
 #Clasificación de los registros de la base de datos de Bogotá con la función
 subsample_bogota_c <- classification(cods_DM, subsample_bogotaf)
 #Evidencia
 evidencia <- read_excel("dat/validacion.xlsx")
+
 
 #Tabla de resultados
 variables_cie10_cups <-c("enf_cie10", "enf_cups", "casos")
@@ -340,14 +336,10 @@ df_pivot_dxprincipal <- read_excel("dat/df_pivot_dxprincipalfinal.xlsx")
 
 #arhivo lista de códigos CIE10 (12,648 códigos)
 cie10 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie10")
-
 #identificación de las descripciones de cada código cie10
 df_pivot_con_descripcion <- df_pivot_dxprincipal %>% left_join(cie10, by = c("dxprincipal" = "codigo"))
-
-#write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
 cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #789 (6.2% no identificados)
 
-write.xlsx(cie10_noidentificados, "D:/Descargas/cie10_noidentificados.xlsx")
 
 
 #TABLA DE CUPS REGISTRADOS EN LA BASE DE DATOS DE TODO BOGOTÁ, POR AÑO (12,062)
@@ -381,11 +373,6 @@ cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
 
 #identificación de las descripciones de cada cups
 df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("codigoprocedimiento" = "codigo"))
-
-#write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
 cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #23  (%) no identificados
-
-write.xlsx(cups_noidentificado, "D:/Descargas/cups_noidentificado.xlsx")
-
 
 
