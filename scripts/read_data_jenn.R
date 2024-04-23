@@ -64,7 +64,9 @@ subsample_df_bta_pir$edad_quinquenal <- cut(subsample_df_bta_pir$edad_num, break
 total_hombres <- sum(subsample_df_bta_pir$sexo == "Hombres")
 total_mujeres <- sum(subsample_df_bta_pir$sexo == "Mujeres")
 
-tabla_edad <- subsample_df_bta_pir %>%
+subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num>=18)
+
+tabla_edad <- subsample_df_bogota %>%
   group_by(edad_quinquenal, sexo) %>%
   summarise(total_personas = n()) %>%
   group_by(edad_quinquenal) %>%
@@ -82,8 +84,6 @@ piramide <- ggplot(data = as.data.frame(tabla_edad), aes(x = edad_quinquenal, y 
   coord_flip()
 
 piramide
-
-
 
 
 #####
@@ -188,6 +188,47 @@ variables_comorbidity <-c("diab", "diabwc", "diabTotal", "rend")
 resultados_comorbidity <- tabla_resultados(data = comorb_pack, variables = variables_comorbidity)
 
 
+#como la función de comorbidity no tiene la opción de sacar grupos por año, se debe hacer manualmente
+#Se crea dataset con pacientes identificados según sus comorbilidades:
+#AÑO2018
+subsample_df_bogota_2018<-subsample_df_bogota %>% filter(anio=="2018")
+comorb_pack_2018<-comorbidity(x = subsample_df_bogota_2018, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
+comorb_pack_2018$diabTotal_2018 <- ifelse(comorb_pack_2018$diab == 1 | comorb_pack_2018$diabwc == 1, 1,0 )
+variables_comorbidity_2018 <-c("diab", "diabwc", "diabTotal_2018", "rend")
+resultados_comorbidity_2018 <- tabla_resultados(data = comorb_pack_2018, variables = variables_comorbidity_2018)
+
+
+#AÑO2019
+subsample_df_bogota_2019<-subsample_df_bogota %>% filter(anio=="2019")
+comorb_pack_2019<-comorbidity(x = subsample_df_bogota_2019, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
+comorb_pack_2019$diabTotal_2019 <- ifelse(comorb_pack_2019$diab == 1 | comorb_pack_2019$diabwc == 1, 1,0 )
+variables_comorbidity_2019 <-c("diab", "diabwc", "diabTotal_2019", "rend")
+resultados_comorbidity_2019 <- tabla_resultados(data = comorb_pack_2019, variables = variables_comorbidity_2019)
+
+
+#AÑO2020
+subsample_df_bogota_2020<-subsample_df_bogota %>% filter(anio=="2020")
+comorb_pack_2020<-comorbidity(x = subsample_df_bogota_2020, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
+comorb_pack_2020$diabTotal_2020 <- ifelse(comorb_pack_2020$diab == 1 | comorb_pack_2020$diabwc == 1, 1,0 )
+variables_comorbidity_2020 <-c("diab", "diabwc", "diabTotal_2020", "rend")
+resultados_comorbidity_2020 <- tabla_resultados(data = comorb_pack_2020, variables = variables_comorbidity_2020)
+
+
+#AÑO2021
+subsample_df_bogota_2021<-subsample_df_bogota %>% filter(anio=="2021")
+comorb_pack_2021<-comorbidity(x = subsample_df_bogota_2021, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
+comorb_pack_2021$diabTotal_2021 <- ifelse(comorb_pack_2021$diab == 1 | comorb_pack_2021$diabwc == 1, 1,0 )
+variables_comorbidity_2021 <-c("diab", "diabwc", "diabTotal_2021", "rend")
+resultados_comorbidity_2021 <- tabla_resultados(data = comorb_pack_2021, variables = variables_comorbidity_2021)
+
+
+#AÑO2022
+subsample_df_bogota_2022<-subsample_df_bogota %>% filter(anio=="2022")
+comorb_pack_2022<-comorbidity(x = subsample_df_bogota_2022, id = "personaid", code = "dxprincipal", map = "charlson_icd10_quan", assign0 = TRUE)
+comorb_pack_2022$diabTotal_2022 <- ifelse(comorb_pack_2022$diab == 1 | comorb_pack_2022$diabwc == 1, 1,0 )
+variables_comorbidity_2022 <-c("diab", "diabwc", "diabTotal_2022", "rend")
+resultados_comorbidity_2022 <- tabla_resultados(data = comorb_pack_2022, variables = variables_comorbidity_2022)
+
 
 #----------------------------------------
 # VIA 2: USANDO LISTA DE CÓDIGOS CIE-10
@@ -208,8 +249,8 @@ subsample_bta <- subsample_df_bogota %>%
 
 #Tabla de resultados
 variables_cie10_dm <-c("dm_t1", "dm_t2", "dm")
-resultados_comorbidity <- tabla_resultados(data = subsample_bta, variables = variables_cie10_dm)
-resultados_comorbidity_anios <- tabla_anioresultados(data = subsample_bta, variables = variables_cie10_dm)
+resultados_cie10 <- tabla_resultados(data = subsample_bta, variables = variables_cie10_dm)
+resultados_cie10_anios <- tabla_anioresultados(data = subsample_bta, variables = variables_cie10_dm)
 
 
 
@@ -246,17 +287,37 @@ classification <- function(cods, bd) {
 
 
 #Hoja que contine los cups clasificados
-cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
-
+cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
 #Base de datos subsample de Bogotá
 subsample_bogotaf <- subsample_df_bogota %>% rename(diagnosticocd = dxprincipal, procedimientocd = codigoprocedimiento)
 
+#PARA DM
+#Hoja que contine los cups clasificados
+cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
+#subsample_bogotaH <- subsample_bogotaf %>% filter(tipoeventoripsdesc %in% c("H", "HOSPITALIZACIONES"))
+#subsample_bogotaH <- subsample_bogotaH %>% filter(edad>=18)
+
 #Clasificación de los registros de la base de datos de Bogotá con la función
 subsample_bogota_c <- classification(cods_DM, subsample_bogotaf)
-
 #Evidencia
 evidencia <- read_excel("dat/validacion.xlsx")
 
+#Tabla de resultados
+variables_cie10_cups <-c("enf_cie10", "enf_cups", "casos")
+resultados_cie10_cups <- tabla_resultados(data = subsample_bogota_c, variables = variables_cie10_cups)
+resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, variables = variables_cie10_cups)
+
+
+#PARA ERC
+#Hoja que contine los cups clasificados
+cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
+#subsample_bogotaH <- subsample_bogotaf %>% filter(tipoeventoripsdesc %in% c("H", "HOSPITALIZACIONES"))
+#subsample_bogotaH <- subsample_bogotaH %>% filter(edad>=18)
+
+#Clasificación de los registros de la base de datos de Bogotá con la función
+subsample_bogota_c <- classification(cods_DM, subsample_bogotaf)
+#Evidencia
+evidencia <- read_excel("dat/validacion.xlsx")
 
 #Tabla de resultados
 variables_cie10_cups <-c("enf_cie10", "enf_cups", "casos")
@@ -286,7 +347,7 @@ df_pivot_con_descripcion <- df_pivot_dxprincipal %>% left_join(cie10, by = c("dx
 #write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
 cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #789 (6.2% no identificados)
 
-
+write.xlsx(cie10_noidentificados, "D:/Descargas/cie10_noidentificados.xlsx")
 
 
 #TABLA DE CUPS REGISTRADOS EN LA BASE DE DATOS DE TODO BOGOTÁ, POR AÑO (12,062)
@@ -321,10 +382,10 @@ cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
 #identificación de las descripciones de cada cups
 df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("codigoprocedimiento" = "codigo"))
 
-
-
 #write.xlsx(df_pivot_con_descripcion, "dat/df_pivot_con_descripcion.xlsx")
 cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #23  (%) no identificados
+
+write.xlsx(cups_noidentificado, "D:/Descargas/cups_noidentificado.xlsx")
 
 
 
