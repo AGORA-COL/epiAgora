@@ -8,6 +8,7 @@
 library(arrow)
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 library(openxlsx)
 library(readxl)
 library(stringr)
@@ -335,10 +336,10 @@ resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, v
 df_pivot_dxprincipal <- read_excel("dat/df_pivot_dxprincipalfinal.xlsx")
 
 #arhivo lista de códigos CIE10 (12,648 códigos)
-cie10 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie10")
+cie10 <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie10-cons")
 #identificación de las descripciones de cada código cie10
 df_pivot_con_descripcion <- df_pivot_dxprincipal %>% left_join(cie10, by = c("dxprincipal" = "codigo"))
-cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #789 (6.2% no identificados)
+cie10_noidentificados <- df_pivot_con_descripcion %>% filter(is.na(descripcion)) #4 no identificados
 
 
 
@@ -375,4 +376,37 @@ cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
 df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("codigoprocedimiento" = "codigo"))
 cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #23  (%) no identificados
 
+
+
+#--------------------------------------------------------------------------------------------------------------------
+
+####################
+#TABLA POR GRUPOS
+####################
+
+cie10_charlson <- cie10 %>% filter(!is.na(charlson_clas))
+
+# Realizar la fusión de los datos por la columna "diagnosticocd"
+merged_data <- merge(subsample_bogotaf, cie10_charlson, by.x = "diagnosticocd", by.y = "codigo", all.x = TRUE)
+
+
+#modificar para que aparezca según año y según grupo específico
+
+# Crear una tabla donde las filas son los personaid únicos y las columnas son las categorías de charlson_clas
+table_data <- merged_data %>%
+  select(personaid, charlson_clas) %>%
+  distinct() %>%
+  pivot_wider(names_from = charlson_clas, values_from = charlson_clas, values_fn = length, values_fill = 0)
+
+
+#diferencias de dx
+dx_ppal<-subsample_bogotaf %>% select(diagnosticocd) %>%  filter(!is.na(diagnosticocd)) %>% distinct()
+
+dx_egreso <- subsample_bogotaf %>%
+             mutate(comprobacion = ifelse(dxegreso %in% dx_ppal$diagnosticocd, "si", "no"))
+
+dx_egreso_noidentificado <- dx_egreso %>%
+                              select(diagnosticocd, dxegreso, comprobacion) %>%
+                              filter(comprobacion != "si") %>%
+                              count(dxegreso, name = "count_dx")
 
