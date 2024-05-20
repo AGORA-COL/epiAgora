@@ -65,9 +65,8 @@ subsample_df_bta_pir$edad_quinquenal <- cut(subsample_df_bta_pir$edad_num, break
 total_hombres <- sum(subsample_df_bta_pir$sexo == "Hombres")
 total_mujeres <- sum(subsample_df_bta_pir$sexo == "Mujeres")
 
-subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num>=18)
 
-tabla_edad <- subsample_df_bogota %>%
+tabla_edad <- subsample_df_bta_pir %>%
   group_by(edad_quinquenal, sexo) %>%
   summarise(total_personas = n()) %>%
   group_by(edad_quinquenal) %>%
@@ -108,7 +107,7 @@ tabla_edad_2018 <- subsample_df_bta_pir_2018 %>%
 piramide_2018 <- ggplot(data = as.data.frame(tabla_edad_2018), aes(x = edad_quinquenal, y = ifelse(sexo == "Hombres", porcentaje, -porcentaje), fill = sexo)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = abs, breaks = seq(-10, 10, 2), limits = c(-10, 10)) +
-  labs(x = "Grupo de Edad", y = "% Población", title = "Pirámide Poblacional") +
+  labs(x = "Grupo de Edad", y = "% Población", title = "Pirámide Poblacional - 2018") +
   scale_fill_manual(values = c("Mujeres" = "darkred", "Hombres" = "midnightblue")) +
   theme_minimal() +
   coord_flip()
@@ -121,7 +120,7 @@ grid.arrange(piramide, piramide_2018, ncol = 2)
 
 #####
 
-subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num>=18)
+subsample_df_bogota<- subsample_df_bogota %>% filter(edad_num >= 18)
 
 
 
@@ -293,6 +292,7 @@ cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "ERC")
 subsample_bogotaf <- subsample_df_bogota %>% rename(diagnosticocd = dxprincipal, procedimientocd = codigoprocedimiento)
 
 
+
 #PARA DM
 #Hoja que contine los cups clasificados
 cods_DM <- read_excel("dat/ALGORITMOS_CLINICOS_NEW_ZC.xlsx", sheet = "DM")
@@ -305,6 +305,7 @@ evidencia <- read_excel("dat/validacion.xlsx")
 variables_cie10_cups <-c("enf_cie10", "enf_cups", "casos")
 resultados_cie10_cups <- tabla_resultados(data = subsample_bogota_c, variables = variables_cie10_cups)
 resultados_cie10_cups_anios <- tabla_anioresultados(data = subsample_bogota_c, variables = variables_cie10_cups)
+
 
 
 #PARA ERC
@@ -376,7 +377,37 @@ cups_todos <- dplyr::bind_rows(cups2009 %>% mutate(aniocups = "cups2009"),
 df_pivot_cups_descripcion <- df_pivot_cups %>% left_join(cups_todos, by = c("codigoprocedimiento" = "codigo"))
 cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) #23  (%) no identificados
 
+#-------------------------------------------------------------------------------
 
+#Dx de ingreso y egreso
+dx_ppal<-subsample_bogotaf %>% select(diagnosticocd) %>%  filter(!is.na(diagnosticocd)) %>% distinct()
+
+dx_egreso <- subsample_bogotaf %>%
+  mutate(comprobacion = ifelse(dxegreso %in% dx_ppal$diagnosticocd, "si", "no"))
+
+dx_egreso_noidentificado <- dx_egreso %>%
+  select(diagnosticocd, dxegreso, comprobacion) %>%
+  filter(comprobacion != "si") %>%
+  count(dxegreso, name = "count_dx")
+
+#Diferencias entre Dx en Hospitalizados
+
+subsample_bogotaf$tipoeventoripsdesc <-case_when(
+  subsample_bogotaf$tipoeventoripsdesc %in% c("C", "CONSULTAS") ~ "CONSULTAS",
+  subsample_bogotaf$tipoeventoripsdesc %in% c("H", "HOSPITALIZACIONES") ~ "HOSPITALIZACIONES",
+  subsample_bogotaf$tipoeventoripsdesc %in% c("P", "PROCEDIMIENTOS DE SALUD") ~ "PROCEDIMIENTOS DE SALUD",
+  subsample_bogotaf$tipoeventoripsdesc %in% c("U", "URGENCIAS") ~ "URGENCIAS",
+)
+
+subsample_bogotaf_hospit<-subsample_bogotaf %>%
+                          filter(tipoeventoripsdesc=="HOSPITALIZACIONES")
+
+
+subsample_bogotaf_hospit$dxdif<-ifelse(subsample_bogotaf_hospit$diagnosticocd==subsample_bogotaf_hospit$dxegreso,1,0) #2265 dx diferentes (21.4%)
+subsample_bogotaf_hospit$dxdif<-ifelse(subsample_bogotaf$diagnosticocd==subsample_bogotaf$dxegreso,1,0)
+
+subsample_bogotaf_hospit<-subsample_bogotaf_hospit %>%
+  filter(dxdif==0)
 
 #--------------------------------------------------------------------------------------------------------------------
 
@@ -384,29 +415,61 @@ cups_noidentificado <- df_pivot_cups_descripcion %>% filter(is.na(descripcion)) 
 #TABLA POR GRUPOS
 ####################
 
+#Grupos de Charlons
 cie10_charlson <- cie10 %>% filter(!is.na(charlson_clas))
 
 # Realizar la fusión de los datos por la columna "diagnosticocd"
-merged_data <- merge(subsample_bogotaf, cie10_charlson, by.x = "diagnosticocd", by.y = "codigo", all.x = TRUE)
-
-
-#modificar para que aparezca según año y según grupo específico
+merged_data_chrl <- merge(subsample_bogotaf, cie10_charlson, by.x = "diagnosticocd", by.y = "codigo", all.x = TRUE)
 
 # Crear una tabla donde las filas son los personaid únicos y las columnas son las categorías de charlson_clas
-table_data <- merged_data %>%
+table_charlson <- merged_data_chrl %>%
   select(personaid, charlson_clas) %>%
   distinct() %>%
   pivot_wider(names_from = charlson_clas, values_from = charlson_clas, values_fn = length, values_fill = 0)
 
 
-#diferencias de dx
-dx_ppal<-subsample_bogotaf %>% select(diagnosticocd) %>%  filter(!is.na(diagnosticocd)) %>% distinct()
+#-------------------------------------------------------------------------------
 
-dx_egreso <- subsample_bogotaf %>%
-             mutate(comprobacion = ifelse(dxegreso %in% dx_ppal$diagnosticocd, "si", "no"))
+#Grupos de AGORA
+names(cie10)<- epitrix::clean_labels(names(cie10))
 
-dx_egreso_noidentificado <- dx_egreso %>%
-                              select(diagnosticocd, dxegreso, comprobacion) %>%
-                              filter(comprobacion != "si") %>%
-                              count(dxegreso, name = "count_dx")
+# Realizar la fusión de los datos por la columna "diagnosticocd"
+merged_data_agr <- merge(subsample_bogotaf, cie10, by.x = "diagnosticocd", by.y = "codigo", all.x = TRUE)
+
+# Crear una tabla donde las filas son los personaid únicos y las columnas son las categorías de grandes_grupos_morbilidad_proyecto
+table_agora <- merged_data_agr %>%
+  select(personaid, grandes_grupos_morbilidad_proyecto) %>%
+  distinct() %>%
+  pivot_wider(names_from = grandes_grupos_morbilidad_proyecto, values_from = grandes_grupos_morbilidad_proyecto, values_fn = length, values_fill = 0)
+
+table1(~.,table_agora)
+
+table_agora1<-table_agora[,-c(1,2)]
+table_agora1[] <- lapply(table_agora1, as.factor)
+table1(~.,table_agora1)
+
+
+
+#Descripción de dx diferentes
+#####
+merged_agr_hospit_ppal <- merged_data_agr %>%
+                     filter(tipoeventoripsdesc == "HOSPITALIZACIONES") %>%
+                     mutate(dxdif = ifelse(diagnosticocd == dxegreso, 1, 0)) %>%
+                     filter(dxdif == 0)
+
+table1(~grandes_grupos_morbilidad_proyecto,merged_agr_hospit_ppal)
+
+
+merged_agr_hospit_egre <- subsample_bogotaf %>%
+  merge(cie10, by.x = "dxegreso", by.y = "codigo", all.x = TRUE) %>%
+  filter(tipoeventoripsdesc == "HOSPITALIZACIONES") %>%
+  mutate(dxdif = ifelse(diagnosticocd == dxegreso, 1, 0)) %>%
+  filter(dxdif == 0)
+
+table1(~grandes_grupos_morbilidad_proyecto,merged_agr_hospit_egre)
+#####
+
+
+
+
 
