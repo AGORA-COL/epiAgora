@@ -19,7 +19,7 @@ To run the application, use the following command:
 
 ```R
 shiny::runApp("app")
-
+```
 
 ## License
 This repository is published under the AGORA project license (Alliance for the generation of evidence on Covid-19, its response and lessons learned for the post-pandemic and future epidemics)
