@@ -22,7 +22,7 @@ shiny::runApp("app")
 ```
 
 ## License
-This repository is published under the AGORA project license (Alliance for the generation of evidence on Covid-19, its response and lessons learned for the post-pandemic and future epidemics)
+This repository is published under the [AGORA ](htthttps://github.com/AGORA-COL/.githubp:// "AGORA ") project license (Alliance for the generation of evidence on Covid-19, its response and lessons learned for the post-pandemic and future epidemics)
 
 ### References
 [Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139] (Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. ​​(2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139. https://doi.org/10.1097/01.MLR.0000182534.19832.83)
