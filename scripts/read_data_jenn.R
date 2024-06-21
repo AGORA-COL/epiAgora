@@ -35,8 +35,8 @@ subsample_df_bogota <- readRDS("dat/subsample_parquet") %>% mutate(ID_uniq = row
 
 #Año de consulta
 subsample_df_bogota <- subsample_df_bogota %>%
-                       mutate(fechaid = as.Date(fechaid, format = "%Y%m%d"),
-                              anio = format(fechaid, "%Y"))
+  mutate(fechaid = as.Date(fechaid, format = "%Y%m%d"),
+         anio = format(fechaid, "%Y"))
 
 #Edad
 subsample_df_bogota <- mutate(subsample_df_bogota, edad_num = as.numeric(edad))
@@ -45,7 +45,7 @@ subsample_df_bogota <- mutate(subsample_df_bogota, edad_num = as.numeric(edad))
 subsample_df_bogota$sexo <- ifelse(subsample_df_bogota$sexodesc %in% c("F", "FEMENINO"), "Mujeres",
                                    ifelse(subsample_df_bogota$sexodesc %in% c("M", "MASCULINO"), "Hombres",
                                           ifelse(subsample_df_bogota$sexodesc %in% c("N", "NO DEFINIDO"), "Sin dato",
-                                          as.character(subsample_df_bogota$sexodesc))))
+                                                 as.character(subsample_df_bogota$sexodesc))))
 
 subsample_df_bta_pir <-  subsample_df_bogota %>% filter(sexo %in% c("Mujeres","Hombres"))
 
@@ -59,7 +59,7 @@ breaks <- c(seq(0, 80, by = 5), Inf)  #"Inf" para el último grupo "más de 80"
 
 etiquetas <- paste0(breaks[-length(breaks)], " a ", breaks[-1])
 subsample_df_bta_pir$edad_quinquenal <- cut(subsample_df_bta_pir$edad_num, breaks = breaks,
-                                           labels = etiquetas, include.lowest = TRUE)
+                                            labels = etiquetas, include.lowest = TRUE)
 
 #Total por sexo
 total_hombres <- sum(subsample_df_bta_pir$sexo == "Hombres")
@@ -140,9 +140,9 @@ tabla_resultados <- function(data, variables) {
   prevalencias <- numeric(length(variables))
 
   for (i in seq_along(variables)) {
-  casos[i] <- sum(data[[variables[i]]] == 1, na.rm = TRUE)
-  n[i] <- sum(!is.na(data[[variables[i]]]))
-  prevalencias[i] <- (casos[i] / n[i] )*100  }
+    casos[i] <- sum(data[[variables[i]]] == 1, na.rm = TRUE)
+    n[i] <- sum(!is.na(data[[variables[i]]]))
+    prevalencias[i] <- (casos[i] / n[i] )*100  }
 
   return(data.frame(Patología = variables, Casos = casos, n = n, Prevalencia=prevalencias))
 }
@@ -150,27 +150,27 @@ tabla_resultados <- function(data, variables) {
 
 #por año
 tabla_anioresultados <- function(data, variables) {
-   resultados <- data.frame(Variable = variables)
+  resultados <- data.frame(Variable = variables)
 
-   #Prevalencia por año
-   for (anio in sort(unique(data$anio))) {
-   prevalencia_anio <- numeric(length(variables))
+  #Prevalencia por año
+  for (anio in sort(unique(data$anio))) {
+    prevalencia_anio <- numeric(length(variables))
 
-   for (i in seq_along(variables)) {
-   prevalencia_anio[i] <- (sum(data[[variables[i]]] == 1 & data$anio == anio, na.rm = TRUE) / sum(data$anio == anio, na.rm = TRUE)) * 100
-   }
-   resultados$prevalencia_anio <- prevalencia_anio
-   colnames(resultados)[ncol(resultados)] <- paste(anio)
-   }
+    for (i in seq_along(variables)) {
+      prevalencia_anio[i] <- (sum(data[[variables[i]]] == 1 & data$anio == anio, na.rm = TRUE) / sum(data$anio == anio, na.rm = TRUE)) * 100
+    }
+    resultados$prevalencia_anio <- prevalencia_anio
+    colnames(resultados)[ncol(resultados)] <- paste(anio)
+  }
   #Prevalencia total
   prevalencia <- numeric(length(variables))
   for (i in seq_along(variables)) {
-  prevalencia[i] <- (sum(data[[variables[i]]] == 1, na.rm = TRUE) / sum(!is.na(data[[variables[i]]]))) * 100
+    prevalencia[i] <- (sum(data[[variables[i]]] == 1, na.rm = TRUE) / sum(!is.na(data[[variables[i]]]))) * 100
   }
 
   resultados <- cbind(resultados, prevalencia)
   return(resultados)
-  }
+}
 
 
 
@@ -238,10 +238,10 @@ resultados_comorbidity_2022 <- tabla_resultados(data = comorb_pack_2022, variabl
 cie10_dm <- readxl::read_excel("dat/cupscodes.xlsx", sheet = "cie-dm")
 
 subsample_bta <- subsample_df_bogota %>%
-                 select(ID_uniq, personaid, dxprincipal, codigoprocedimiento, fechaid, anio) %>%
-                 mutate(dm = ifelse(dxprincipal %in% cie10_dm$codigo, 1, 0),
-                        dm_t1 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t1"], 1, 0),
-                        dm_t2 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t2"], 1, 0))
+  select(ID_uniq, personaid, dxprincipal, codigoprocedimiento, fechaid, anio) %>%
+  mutate(dm = ifelse(dxprincipal %in% cie10_dm$codigo, 1, 0),
+         dm_t1 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t1"], 1, 0),
+         dm_t2 = ifelse(dxprincipal %in% cie10_dm$codigo[cie10_dm$tipo == "t2"], 1, 0))
 
 
 # Cuántos dx hay de diabetes, contando una vez cada "personaid"
@@ -400,7 +400,7 @@ subsample_bogotaf$tipoeventoripsdesc <-case_when(
 )
 
 subsample_bogotaf_hospit<-subsample_bogotaf %>%
-                          filter(tipoeventoripsdesc=="HOSPITALIZACIONES")
+  filter(tipoeventoripsdesc=="HOSPITALIZACIONES")
 
 
 subsample_bogotaf_hospit$dxdif<-ifelse(subsample_bogotaf_hospit$diagnosticocd==subsample_bogotaf_hospit$dxegreso,1,0) #2265 dx diferentes (21.4%)
@@ -448,14 +448,28 @@ table_agora1<-table_agora[,-c(1,2)]
 table_agora1[] <- lapply(table_agora1, as.factor)
 table1(~.,table_agora1)
 
+#¿Solo las hospitalizaciones tienen códigos en dxegreso?
+ensayo1 <- subsample_bogotaf %>% filter(!is.na(dxegreso))
+table(filter(ensayo1, dxegreso == 0)$tipoeventoripsdesc)
+table(filter(ensayo1, dxegreso != 0)$tipoeventoripsdesc) #si, solo hospitalizaciones
 
+
+
+#¿Que edad aparece en consultas con Dx propios de neonatos?
+#ejemplo:
+#P050= Bajo Peso Para La Edad Gestacional
+#P073=Otros Recien Nacidos Pretermino
+#P393=Infeccion Neonatal De Las Vias Urinarias
+#P290=Insuficiencia Cardiaca Neonatal
+#P292=Hipertension Neonatal
+#P220=Sindrome De Dificultad Respiratoria Del Recien Nacido
 
 #Descripción de dx diferentes
 #####
 merged_agr_hospit_ppal <- merged_data_agr %>%
-                     filter(tipoeventoripsdesc == "HOSPITALIZACIONES") %>%
-                     mutate(dxdif = ifelse(diagnosticocd == dxegreso, 1, 0)) %>%
-                     filter(dxdif == 0)
+  filter(tipoeventoripsdesc == "HOSPITALIZACIONES") %>%
+  mutate(dxdif = ifelse(diagnosticocd == dxegreso, 1, 0)) %>%
+  filter(dxdif == 0)
 
 table1(~grandes_grupos_morbilidad_proyecto,merged_agr_hospit_ppal)
 
@@ -468,6 +482,9 @@ merged_agr_hospit_egre <- subsample_bogotaf %>%
 
 table1(~grandes_grupos_morbilidad_proyecto,merged_agr_hospit_egre)
 #####
+
+
+
 
 
 
