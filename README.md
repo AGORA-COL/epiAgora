@@ -6,20 +6,19 @@ Generar rutinas reproducibles para agrupar y analizar eventos de salud registrad
 
 ## Contenido del repositorio
 ### data/
-Contiene la base de datos suministrada por el Ministerio de Salud y Protección Social. Incluye diagnósticos médicos (CIE-10), procedimientos (CUPS) y características del paciente como edad, sexo y tipo de afiliación.
+Contiene la base de datos suministrada por el Ministerio de Salud y Protección Social. Incluye diagnósticos médicos (CIE-10) y características del paciente como edad, sexo y tipo de afiliación.
 
 ### scripts/
-Incluye análisis preliminares, pruebas de verificación de códigos CIE-10 y CUPS, y exploraciones de métodos para agrupar eventos de salud. También se incluye la estimación de prevalencia aproximada usando la metodología de Charlson.
+Incluye análisis preliminares, pruebas de verificación de códigos CIE-10 y exploraciones de métodos para agrupar eventos de salud con dos sistemas de clasificaciones de códigos: CHARLSON y ÁGORA.
 
 ### functions/
 Contiene la rutina principal de análisis:
 
-Limpieza y verificación de datos.
+- Limpieza y verificación de datos.
 
-Agrupación de eventos de salud.
+- Agrupación de eventos de salud.
 
-Análisis estadístico del impacto de la pandemia sobre estos eventos.
-También se encuentran aquí los archivos ui.R y server.R para ejecutar un dashboard interactivo que permite visualizar características clave de las consultas médicas.
+- Visualizaciones básicas del impacto de la pandemia sobre estos eventos.
 
 output/
 Incluye los productos generados por la rutina: agrupaciones, gráficos, tablas y otros resultados.
@@ -27,60 +26,48 @@ Incluye los productos generados por la rutina: agrupaciones, gráficos, tablas y
 ## Sistemas de agrupación incluidos
 ### 1. Sistema de Agrupación ÁGORA
 Este esquema fue diseñado en el marco del proyecto ÁGORA para abordar necesidades específicas de análisis en Colombia, como el estudio de transiciones epidemiológicas y demográficas.
-Agrupa los 12.654 códigos CIE-10 en 15 categorías clínicas, considerando su relevancia en salud pública nacional y permitiendo desagregaciones regionales y temporales.
+Agrupa los 12.654 códigos CIE-10 en 15 categorías clínicas, considerando su relevancia en salud pública nacional y permitiendo desagregaciones regionales y temporales y se distribuyen de la siguiente manera:
 
-Categorías principales:
+- Alteraciones visuales o auditivas (335 códigos).
+- Condiciones asociadas a lesiones o agresiones (4.692 códigos).
+- COVID-19 (5 códigos).
+- Enfermedades cardiovasculares y metabólicas (639 códigos).
+- Enfermedades de los sistemas digestivo o urinario (727 códigos).
+- Enfermedades infecciosas (1.095 códigos).
+- Enfermedades osteomusculares y degenerativas (528 códigos).
+- Enfermedades respiratorias crónicas o de la piel o estructuras anexas (460 códigos).
+- Factores relacionados con el contacto con los servicios de salud (592 códigos).
+- Salud oral (105 códigos).
+- Signos y síntomas mal definidos (311 códigos).
+- Trastornos materno-perinatales, congénitos o nutricionales (1.501 códigos).
+- Trastornos neurológicos o mentales (726 códigos).
+- Tumores, enfermedades hematopoyéticas y del sistema inmune (921 códigos).
+- No válido para análisis (17 códigos).
 
-- Alteraciones visuales o auditivas (335)
-
-- Lesiones o agresiones (4.692)
-
-- COVID-19 (5)
-
-- Enfermedades cardiovasculares y metabólicas (639)
-
-- Infecciones (1.095)
-
-- Osteomusculares y degenerativas (528)
-
-- Trastornos neurológicos o mentales (726)
-
-- Tumores y enfermedades inmunológicas (921)
-
-...y otras
-
-Este sistema permite una clasificación integral, compensando el sesgo por eventos muy frecuentes, y facilitando análisis descriptivos y comparativos robustos.
 
 ### 2. Sistema de Agrupación tipo Charlson
 Basado en el índice de comorbilidad de Charlson, ampliamente validado a nivel internacional, este sistema agrupa únicamente las comorbilidades crónicas relevantes para la mortalidad y carga de enfermedad, usando 880 códigos CIE-10.
 
-Incluye 17 categorías, tales como:
+- Las categorías propuestas para este sistema de agrupación de códigos incluyen:
+- Cualquier tipo de malignidad, incluyendo linfoma y leucemia, excepto neoplasias malignas de piel (432 códigos)
+- Demencia (23 códigos)
+- Diabetes con complicaciones crónicas (25 códigos)
+- Diabetes sin complicaciones crónicas (25 códigos)
+- Enfermedad cerebrovascular (82 códigos)
+- Enfermedad pulmonar crónica (52 códigos)
+- Enfermedad hepática leve (33 códigos)
+- Enfermedad hepática moderada o severa (11 códigos)
+- Enfermedad vascular periférica (25 códigos)
+- Enfermedad renal (31 códigos)
+- Enfermedades reumáticas (26 códigos) 
+- Hemiplejía o paraplejía (19 códigos)
+- Insuficiencia cardíaca congestiva (18 códigos)
+- Infarto de miocardio (11 códigos)
+- SIDA/VIH (22 códigos)
+- Tumor sólido metastásico (9 códigos)
+- Úlcera péptica (36 códigos)
 
-- Insuficiencia cardíaca
-
-- Diabetes (con y sin complicaciones)
-
-- Enfermedad renal
-
-- Enfermedad hepática
-
-- Tumores malignos y metastásicos
-
-- VIH/SIDA
-
-- Demencia
-
-- Enfermedad pulmonar crónica
-
-- Enfermedades cerebrovasculares, entre otras.
-
-Este sistema no considera códigos asociados a eventos de alta frecuencia pero bajo impacto (como salud oral o COVID-19), ya que fue diseñado antes de la pandemia y está centrado en el pronóstico clínico.
-
-Ambos sistemas son complementarios:
-
-ÁGORA ofrece un enfoque contextualizado y completo para salud pública en Colombia.
-
-Charlson aporta robustez metodológica y comparabilidad internacional para el estudio de comorbilidades crónicas.
+Por su solidez metodológica y amplia validación en diversas poblaciones, esta agrupación de 17 categorías ha facilitado su incorporación en estudios epidemiológicos (9). En conjunto, ambos sistemas de agrupación ofrecen enfoques complementarios para el análisis epidemiológico: mientras el sistema ÁGORA permite una visión detallada de los eventos en salud pública relevantes para el contexto colombiano, abarcando la totalidad de códigos CIE-10 y priorizando eventos relevantes para el sistema de salud local, la agrupación de Charlson aporta una herramienta estandarizada y centrada en comorbilidades relevantes desde su punto de vista clínico y la carga de la enfermedad. 
 
 
 
@@ -89,3 +76,6 @@ Este proyecto se encuentra licenciado bajo el marco del proyecto ÁGORA - Alianz
 
 ### Referencias
 [Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139] (Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. ​​(2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139. https://doi.org/10.1097/01.MLR.0000182534.19832.83)
+
+Charlson ME, Pompei P, Ales KL, MacKenzie CR. A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. J Chronic Dis. 1987;40(5):373–83. DOI: 10.1016/0021-9681(87)90171-8
+
