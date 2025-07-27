@@ -1,10 +1,17 @@
 cff-version: 1.2.0
-message: "Si utilizas este recurso, por favor citar este trabajo como se indica a continuación."
+message: "Si utilizas este recurso, por favor cita este trabajo como: Murillo-Alvarado J, Pinilla Espejo JM, Cucunubá ZM. (2025). Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2018–2022). Proyecto ÁGORA."
 title: "Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2009–2022)"
 authors:
-  - family-names: ÁGORA
-    name: Proyecto
-    affiliation: Alianza para la Generación de Evidencia sobre COVID-19
+  - family-names: Murillo-Alvarado
+    given-names: Jennifer
+    orcid: https://orcid.org/0000-0000-0000-0000  # Puedes actualizarlo si tienes ORCID
+    affiliation: Instituto de Salud Pública, Pontificia Universidad Javeriana
+  - family-names: Pinilla Espejo
+    given-names: Jenny M.
+    affiliation: Instituto de Salud Pública, Pontificia Universidad Javeriana
+  - family-names: Cucunubá
+    given-names: Zulma M.
+    affiliation: Imperial College London; Instituto de Salud Pública, Pontificia Universidad Javeriana
 date-released: 2025-07-27
 version: "1.0.0"
 repository-code: https://github.com/AGORA-Colombia/rips-analisis
@@ -19,4 +26,4 @@ keywords:
   - comorbilidades
   - Colombia
 abstract: >
-  Rutina de análisis en software libre desarrollada en el marco del proyecto ÁGORA, orientada al mejoramiento de la calidad y análisis de los datos del Registro Individual de Prestación de Servicios de Salud (RIPS) en Colombia. Incluye dos sistemas de agrupación de códigos CIE-10: el sistema ÁGORA, adaptado al contexto epidemiológico colombiano, y el sistema basado en la metodología del índice de Charlson para comorbilidades.
+Rutina de análisis en software libre desarrollada en el marco del proyecto ÁGORA, orientada al mejoramiento de la calidad y análisis de los datos del Registro Individual de Prestación de Servicios de Salud (RIPS) en Colombia. Incluye dos sistemas de agrupación de códigos CIE-10: el sistema ÁGORA, adaptado al contexto epidemiológico colombiano, y el sistema basado en la metodología del índice de Charlson para comorbilidades.
