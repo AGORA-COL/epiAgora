@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Si utilizas este recurso, por favor citar este trabajo como se indica a continuación."
+title: "Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2009–2022)"
+authors:
+  - family-names: ÁGORA
+    name: Proyecto
+    affiliation: Alianza para la Generación de Evidencia sobre COVID-19
+date-released: 2025-07-27
+version: "1.0.0"
+repository-code: https://github.com/AGORA-Colombia/rips-analisis
+url: https://github.com/AGORA-Colombia/rips-analisis
+license: CC-BY-4.0
+keywords:
+  - RIPS
+  - epidemiología
+  - agrupación CIE-10
+  - COVID-19
+  - vigilancia en salud pública
+  - comorbilidades
+  - Colombia
+abstract: >
+  Rutina de análisis en software libre desarrollada en el marco del proyecto ÁGORA, orientada al mejoramiento de la calidad y análisis de los datos del Registro Individual de Prestación de Servicios de Salud (RIPS) en Colombia. Incluye dos sistemas de agrupación de códigos CIE-10: el sistema ÁGORA, adaptado al contexto epidemiológico colombiano, y el sistema basado en la metodología del índice de Charlson para comorbilidades.
