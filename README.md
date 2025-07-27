@@ -69,10 +69,23 @@ Basado en el índice de comorbilidad de Charlson, ampliamente validado a nivel i
 
 Por su solidez metodológica y amplia validación en diversas poblaciones, esta agrupación de 17 categorías ha facilitado su incorporación en estudios epidemiológicos (9). En conjunto, ambos sistemas de agrupación ofrecen enfoques complementarios para el análisis epidemiológico: mientras el sistema ÁGORA permite una visión detallada de los eventos en salud pública relevantes para el contexto colombiano, abarcando la totalidad de códigos CIE-10 y priorizando eventos relevantes para el sistema de salud local, la agrupación de Charlson aporta una herramienta estandarizada y centrada en comorbilidades relevantes desde su punto de vista clínico y la carga de la enfermedad. 
 
+## Contribuciones
+Las contribuciones son bienvenidas via pull requests.
+
+## Autores: 
+-Zulma M. Cucunubá, 
+-Jennifer Murillo-Alvarado 
+-Jenny Marcela Pinilla Espejo
 
 
-## Licencia
-Este proyecto se encuentra licenciado bajo el marco del proyecto ÁGORA - Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones para la Pospandemia y Epidemias Futuras.
+## Financiación:
+Esta investigación fue financiada por el Ministerio de Ciencia, Tecnología e Innovación de Colombia, proyecto ÁGORA: “Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones Aprendidas para la Postpandemia y Futuras Epidemias” (Contrato N° 637-2022).
+
+## Cómo citar este recurso 
+Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publicaciones, por favor citar de la siguiente manera:
+
+"Proyecto ÁGORA. (2025). Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2018–2022). Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones para la Pospandemia y Epidemias Futuras. Disponible en: https://github.com/AGORA-Colombia/rips-analisis".
+
 
 ### Referencias
 [Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139] (Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. ​​(2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139. https://doi.org/10.1097/01.MLR.0000182534.19832.83)
