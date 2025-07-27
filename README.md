@@ -31,21 +31,21 @@ Agrupa los 12.654 códigos CIE-10 en 15 categorías clínicas, considerando su r
 
 Categorías principales:
 
-Alteraciones visuales o auditivas (335)
+- Alteraciones visuales o auditivas (335)
 
-Lesiones o agresiones (4.692)
+- Lesiones o agresiones (4.692)
 
-COVID-19 (5)
+- COVID-19 (5)
 
-Enfermedades cardiovasculares y metabólicas (639)
+- Enfermedades cardiovasculares y metabólicas (639)
 
-Infecciones (1.095)
+- Infecciones (1.095)
 
-Osteomusculares y degenerativas (528)
+- Osteomusculares y degenerativas (528)
 
-Trastornos neurológicos o mentales (726)
+- Trastornos neurológicos o mentales (726)
 
-Tumores y enfermedades inmunológicas (921)
+- Tumores y enfermedades inmunológicas (921)
 
 ...y otras
 
@@ -56,23 +56,23 @@ Basado en el índice de comorbilidad de Charlson, ampliamente validado a nivel i
 
 Incluye 17 categorías, tales como:
 
-Insuficiencia cardíaca
+- Insuficiencia cardíaca
 
-Diabetes (con y sin complicaciones)
+- Diabetes (con y sin complicaciones)
 
-Enfermedad renal
+- Enfermedad renal
 
-Enfermedad hepática
+- Enfermedad hepática
 
-Tumores malignos y metastásicos
+- Tumores malignos y metastásicos
 
-VIH/SIDA
+- VIH/SIDA
 
-Demencia
+- Demencia
 
-Enfermedad pulmonar crónica
+- Enfermedad pulmonar crónica
 
-Enfermedades cerebrovasculares, entre otras.
+- Enfermedades cerebrovasculares, entre otras.
 
 Este sistema no considera códigos asociados a eventos de alta frecuencia pero bajo impacto (como salud oral o COVID-19), ya que fue diseñado antes de la pandemia y está centrado en el pronóstico clínico.
 
@@ -84,8 +84,8 @@ Charlson aporta robustez metodológica y comparabilidad internacional para el es
 
 
 
-## License
-This repository is published under the [AGORA](https://github.com/AGORA-COL/.github) project license (Alliance for Generating Evidence on COVID-19, its Response, and Lessons Learned for the Post-Pandemic and Future Epidemics).
+## Licencia
+Este proyecto se encuentra licenciado bajo el marco del proyecto ÁGORA - Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones para la Pospandemia y Epidemias Futuras.
 
-### References
+### Referencias
 [Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139] (Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. ​​(2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139. https://doi.org/10.1097/01.MLR.0000182534.19832.83)
