@@ -73,10 +73,9 @@ Por su solidez metodológica y amplia validación en diversas poblaciones, esta 
 Las contribuciones son bienvenidas via pull requests.
 
 ## Autores: 
--Zulma M. Cucunubá, 
 -Jennifer Murillo-Alvarado 
--Jenny Marcela Pinilla Espejo
-
+-Jenny M. Pinilla Espejo
+--Zulma M. Cucunubá
 
 ## Financiación:
 Esta investigación fue financiada por el Ministerio de Ciencia, Tecnología e Innovación de Colombia, proyecto ÁGORA: “Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones Aprendidas para la Postpandemia y Futuras Epidemias” (Contrato N° 637-2022).
@@ -84,8 +83,17 @@ Esta investigación fue financiada por el Ministerio de Ciencia, Tecnología e I
 ## Cómo citar este recurso 
 Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publicaciones, por favor citar de la siguiente manera:
 
-"Proyecto ÁGORA. (2025). Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2018–2022). Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones para la Pospandemia y Epidemias Futuras. Disponible en: https://github.com/AGORA-Colombia/rips-analisis".
+## 📚 Cómo citar este recurso
+Si utilizas este código, por favor citarlo de la siguiente manera:
 
+> **Murillo-Alvarado J, Pinilla Espejo JM, Cucunubá ZM.** (2025).  
+> *Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2009–2022)*.  
+> Proyecto ÁGORA.  
+> Disponible en: [https://github.com/AGORA-Colombia/rips-analisis](https://github.com/AGORA-Colombia/rips-analisis)
+
+También puedes exportar esta cita en formatos como **BibTeX**, **RIS**, **APA** y más desde el botón **“Cite this repository”** en la parte superior derecha de este repositorio (disponible si has agregado el archivo `CITATION.cff`).
+
+---
 
 ### Referencias
 [Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139] (Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., Saunders, L. D., Beck, C. A., Feasby, T. E., & Ghali, W. A. ​​(2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical Care, 43(11), 1130–1139. https://doi.org/10.1097/01.MLR.0000182534.19832.83)
