@@ -72,19 +72,16 @@ Por su solidez metodológica y amplia validación en diversas poblaciones, esta 
 ## Contribuciones
 Las contribuciones son bienvenidas via pull requests.
 
-## Autores: 
--Jennifer Murillo-Alvarado 
--Jenny M. Pinilla Espejo
---Zulma M. Cucunubá
+## Autores 
+- Jennifer Murillo-Alvarado. 
+- Jenny M. Pinilla Espejo.
+- Zulma M. Cucunubá.
 
-## Financiación:
+## Financiación
 Esta investigación fue financiada por el Ministerio de Ciencia, Tecnología e Innovación de Colombia, proyecto ÁGORA: “Alianza para la Generación de Evidencia sobre COVID-19, su Respuesta y Lecciones Aprendidas para la Postpandemia y Futuras Epidemias” (Contrato N° 637-2022).
 
-## Cómo citar este recurso 
-Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publicaciones, por favor citar de la siguiente manera:
-
-## 📚 Cómo citar este recurso
-Si utilizas este código, por favor citarlo de la siguiente manera:
+##  Cómo citar este recurso
+Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publicaciones, por favor citarlo de la siguiente manera:
 
 > **Murillo-Alvarado J, Pinilla Espejo JM, Cucunubá ZM.** (2025).  
 > *Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2009–2022)*.  
