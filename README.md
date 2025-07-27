@@ -1,4 +1,5 @@
-# epiAgoraCIE10 es una rutina de software libre para el análisis de datos RIPS para vigilancia epidemiológica en Colombia
+# _epiAgoraCIE10_
+Es una rutina de software libre para el análisis de datos RIPS para vigilancia epidemiológica en Colombia
 Este repositorio contiene una rutina de análisis en software libre, desarrollada en el marco del proyecto ÁGORA, orientada al mejoramiento de la calidad y análisis de los datos del Registro Individual de Prestación de Servicios de Salud (RIPS). Esta herramienta permite agrupar eventos de salud y evaluar tendencias en la atención médica entre 2009 y 2022, con especial énfasis en los cambios observados durante la pandemia por COVID-19.
 
 ## Objetivo
@@ -73,7 +74,9 @@ Por su solidez metodológica y amplia validación en diversas poblaciones, esta 
 Las contribuciones son bienvenidas via pull requests.
 
 ## Autores 
-- Jennifer Murillo-Alvarado. 
+- Jennifer Murillo-Alvarado.
+- Andrés Moreno.
+- Jaime Pavlich-Mariscal.
 - Jenny M. Pinilla Espejo.
 - Zulma M. Cucunubá.
 
@@ -83,7 +86,7 @@ Esta investigación fue financiada por el Ministerio de Ciencia, Tecnología e I
 ##  Cómo citar este recurso
 Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publicaciones, por favor citarlo de la siguiente manera:
 
-> **Murillo-Alvarado J, Pinilla Espejo JM, Cucunubá ZM.** (2025).  
+> **Murillo-Alvarado J, Moreno A, Pavlich-Mariscal J, Pinilla-Espejo JM, Cucunubá ZM.** (2025).  
 > *Rutina de análisis para el agrupamiento de eventos de salud en Colombia a partir de datos RIPS (2009–2022)*.  
 > Proyecto ÁGORA.  
 > Disponible en: [https://github.com/AGORA-Colombia/rips-analisis](https://github.com/AGORA-Colombia/rips-analisis)
