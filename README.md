@@ -20,7 +20,7 @@ Contiene la rutina principal de análisis:
 
 - Visualizaciones básicas del impacto de la pandemia sobre estos eventos.
 
-output/
+### output/
 Incluye los productos generados por la rutina: agrupaciones, gráficos, tablas y otros resultados.
 
 ## Sistemas de agrupación incluidos
