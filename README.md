@@ -50,7 +50,7 @@ Agrupa los 12.654 códigos CIE-10 en 15 categorías clínicas, considerando su r
 ### 2. Sistema de Agrupación tipo Charlson
 Basado en el índice de comorbilidad de Charlson, ampliamente validado a nivel internacional, este sistema agrupa únicamente las comorbilidades crónicas relevantes para la mortalidad y carga de enfermedad, usando 880 códigos CIE-10.
 
-- Las categorías propuestas para este sistema de agrupación de códigos incluyen:
+Las categorías propuestas para este sistema de agrupación de códigos incluyen:
 - Cualquier tipo de malignidad, incluyendo linfoma y leucemia, excepto neoplasias malignas de piel (432 códigos)
 - Demencia (23 códigos)
 - Diabetes con complicaciones crónicas (25 códigos)
