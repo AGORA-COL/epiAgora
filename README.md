@@ -94,6 +94,10 @@ Si utilizas esta rutina o sus sistemas de agrupación en tus análisis o publica
 
 También puedes exportar esta cita en formatos como **BibTeX**, **RIS**, **APA** y más desde el botón **“Cite this repository”** en la parte superior derecha de este repositorio (disponible si has agregado el archivo `CITATION.cff`).
 
+
+## Contacto
+Si tienes preguntas, sugerencias o comentarios, por favor crea un Issue en este repositorio o escribir al siguiente correo: zulma.cucunuba@javeriana.edu.co
+
 ---
 
 ### Referencias
