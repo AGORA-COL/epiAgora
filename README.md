@@ -4,7 +4,7 @@ Es una rutina de software libre en R para el análisis de datos RIPS para vigila
 Esta rutina fue desarrollada en el marco del proyecto [ÁGORA](https://agora-colombia.com/), orientada al mejoramiento de la calidad y análisis de los datos del Registro Individual de Prestación de Servicios de Salud (RIPS) u otras fuentes que contengan códigos CIE-10. Esta herramienta permite agrupar eventos de salud y evaluar tendencias en la atención médica entre 2009 y 2024, con especial énfasis en los cambios observados durante la pandemia por COVID-19.
 
 ## Objetivo
-Generar rutinas reproducibles para agrupar y analizar eventos de salud en Colombia, facilitando el uso de datos administrativos para estudios de vigilancia en salud pública. El enfoque es adaptable al contexto colombiano y contempla el desarrollo futuro de una librería en R.
+Generar rutinas reproducibles para agrupar y analizar eventos de salud, facilitando el uso de datos administrativos para estudios de vigilancia en salud pública. El enfoque es adaptable al contexto colombiano y contempla el desarrollo futuro de una librería en R.
 
 ## Contenido del repositorio
 ### data/
