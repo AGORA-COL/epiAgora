@@ -8,7 +8,7 @@ Generar rutinas reproducibles para agrupar y analizar eventos de salud registrad
 
 ## Contenido del repositorio
 ### data/
-Contiene la base de datos suministrada por el Ministerio de Salud y Protección Social. Incluye diagnósticos médicos (CIE-10) y características del paciente como edad, sexo y tipo de afiliación.
+Contiene un ejemplo (no datos reales, los cuales son protegidos) de base de datos típica con códigos CIE-10 y variables sociodemográficas de pacientes como edad, sexo y tipo de afiliación.
 
 ### scripts/
 Incluye análisis preliminares, pruebas de verificación de códigos CIE-10 y exploraciones de métodos para agrupar eventos de salud con dos sistemas de clasificaciones de códigos: CHARLSON y ÁGORA.
